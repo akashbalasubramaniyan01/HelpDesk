@@ -55,8 +55,11 @@ dev_dependencies:
   bottom_animation: ^2.0.0
   flutter_svg: ^2.0.10+1
   curved_navigation_bar: ^1.0.3
-  http: ^1.2.0
+  http: ^1.2.1
   global_configuration: ^2.0.0-nullsafety.1
+  http_auth: ^1.0.4
+
+
 
 
 # For information on the generic Dart part of this file, see the
@@ -86,12 +89,11 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+  fonts:
+    - family: OpenSansBold
+      fonts:
+        - asset: assets/font/Open_Sans_Bold.ttf
+          weight: 700
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

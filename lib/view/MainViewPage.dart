@@ -1,12 +1,18 @@
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bottom_animation/bottom_animation.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:helpdesk/utils/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../model/LoginModel.dart';
+import 'TicketList.dart';
+import 'package:flutter_svg/svg.dart';
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+   List <LoginModel> LoginModels;
+   MainPage(this.LoginModels);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -70,7 +76,7 @@ void initState() {
                 ),
               ),
               TextSpan(
-                text: 'DESK',
+                text: ' DESK',
                 style: TextStyle(
                   color: Color(0xFFFE9879),
                   fontWeight: FontWeight.w800,
@@ -131,17 +137,15 @@ void initState() {
                 style:TextStyle(  fontSize: 23.12,
                   color: Colors.white,
                   letterSpacing: 1.999999953855673,),
-                children: const [
+                children:  [
                   TextSpan(
-                    text: 'Wellcome',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                    ),
+                    text: 'Hello\n',
+                      style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.bodyLarge)
                   ),
                   TextSpan(
-                    text: '  GUEST',
-                    style: TextStyle(
-                      color: Color(0xFFFE9879),
+                    text: widget.LoginModels[0].name,
+                    style: GoogleFonts.openSans(
+                      color: Colors.white,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -149,14 +153,7 @@ void initState() {
               ),
             ),
           ),
-          Container(
-            height: size.height/1.5,
-            margin: const EdgeInsets.only(top: 40),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(50),topLeft: Radius.circular(50) ),
-            ),
-          ),
+          TicketPage()
         ],
       ),
     ),
