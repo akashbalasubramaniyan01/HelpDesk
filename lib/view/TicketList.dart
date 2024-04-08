@@ -1,10 +1,27 @@
 
 
+import 'dart:convert';
+import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:helpdesk/utils/colors.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:helpdesk/utils/colors.dart';
+import 'package:helpdesk/view/MainViewPage.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'dart:convert' as convert;
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:helpdesk/view/login.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:global_configuration/global_configuration.dart';
+import 'package:http_auth/http_auth.dart';
+import 'package:intl/intl.dart';
+import '../model/LoginModel.dart';
 class TicketPage extends StatefulWidget {
   const TicketPage({super.key});
 
@@ -14,382 +31,556 @@ class TicketPage extends StatefulWidget {
 
 class _TicketPageState extends State<TicketPage> {
   TextEditingController username = TextEditingController();
+  TextEditingController Description = TextEditingController();
   TextEditingController issuecode = TextEditingController();
   TextEditingController issuedetails = TextEditingController();
-  String dropdownvalue = 'Select Priority';
+  String IssueAllert = "";
+  String DescAllert = "";
+  String UserNameAllert = "";
+  String CodeAllert = "";
+  String dropdownvalue = 'Moderate';
   String pvalue = 'Select Issue';
-  var items =  ['Select Priority','Moderate','Critical','High','Low'];
+  var items =  ['Moderate','Critical','High','Low'];
   var itemsissue =  ['Select Issue','Hardware Failure','Network/ WiFi Issue','Printer Problem','E-Mail Issue','Office 365','CCTV','Software Issue','Other'];
 
+
+  CreateTicket(String Username, String Desc, String issuecode, String issuedetails, String issuevalsue, String issuetype,String dateInput) async {
+     DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
+
+    try{
+      var url = "${GlobalConfiguration().get("ApiURl")}apinewticket";
+      print(url);
+      final response = await client.put(Uri.parse(url),
+        body: json.encode({
+          "docdate": dateInput,
+          "stext": Desc,
+          "ptype": issuetype,
+          "priority":issuevalsue,
+          "details": issuedetails,
+          "usrname": Username,
+          "ccode": issuecode
+
+
+        }),
+
+        headers:   {
+          'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+          'Content-Type': 'application/json',
+          'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
+        },
+
+
+      );
+      print(response.statusCode);
+      print(json.encode({
+        "docdate": dateInput,
+        "stext": Desc,
+        "ptype": issuetype,
+        "priority":issuevalsue,
+        "details": issuedetails,
+        "usrname": Username,
+        "ccode": issuecode
+
+
+      }));
+      if (response.statusCode == 200) {
+        setState(() {
+
+          var jsonResponse = json.decode(response.body);
+          print(jsonResponse);
+
+        }); }
+      else {
+        final materialBanner = MaterialBanner(
+          /// need to set following properties for best effect of awesome_snackbar_content
+          elevation: 2,
+          backgroundColor: Colors.transparent,
+          forceActionsBelow: false,
+          content: AwesomeSnackbarContent(
+            title: 'Failure',
+            message:
+            'Username And Password invalid!!!',
+
+            /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+            contentType: ContentType.failure,
+            // to configure for material banner
+            inMaterialBanner: true,
+          ),
+          actions: const [SizedBox.shrink()],
+        );
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentMaterialBanner()
+          ..showMaterialBanner(materialBanner);
+      }
+    }catch (e){
+      print(e);
+    }
+
+  }
   void TicketCreate(size){
+    TextEditingController dateInput = TextEditingController();
+     IssueAllert = "";
+     DescAllert = "";
+     UserNameAllert = "";
+     CodeAllert = "";
+     dateInput.text = ""; //set the initial value of text field
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       elevation: 10,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
       builder: (BuildContext context) {
         // UDE : SizedBox instead of Container for whitespaces
-        return  SizedBox(
-          height: 500,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  width: size.width,
-                  decoration: BoxDecoration(
-                      color: MyColors.AppthemeColor,
-                      boxShadow: [new BoxShadow(
-                 // color: Colors.black,
-                  //blurRadius: 1.0,
-                ),]),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(child:  Text("Create Ticket",style: GoogleFonts.quicksand( fontSize: 25.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,),)),
-                ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
+        return  SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.77,
+            child: SingleChildScrollView(
+              child: Column(
 
-                     Container(
-                  alignment: Alignment.center,
-                    height: size.height / 12,
-
-                    //margin: const EdgeInsets.only(left: 5,right: 5),
+                children: [
+                  Container(
+                    width: size.width,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color:  Colors.white,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0,),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          //mail icon
-                          Icon(CupertinoIcons.person),
-                          const SizedBox(
-                            width: 16,
-                          ),
+                        color: MyColors.AppthemeColor,
+                        boxShadow: [new BoxShadow(
+                   // color: Colors.black,
+                    //blurRadius: 1.0,
+                  ),]),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(child:  Text("Create Ticket",style: GoogleFonts.quicksand( fontSize: 25.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,),)),
+                  ),
+                  ),
+                  SingleChildScrollView(
+                    child: Container(
+                      height: size.height/0.7,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
 
-                          //divider svg
-                          SvgPicture.string(
-                            '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
-                            width: 1.0,
-                            height: 15.5,
-                            color: Colors.black87,
-                          ),
-                          const SizedBox(
-                            width: 16,
-                          ),
+                          children: <Widget>[
+                            Container(height: 15,),
+                          Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color:  Colors.white,
+                              ),
+                             // height: MediaQuery.of(context).size.width / 3,
+                              child: Center(
+                                  child: TextField(
+                                    controller: dateInput,
 
-                          //email address textField
-                          Expanded(
-                            child: TextField(
-                              controller: username,
-                              maxLines: 1,
-                              cursorColor: Colors.black87,
-                              keyboardType: TextInputType.emailAddress,
-                              style: TextStyle(   fontSize: 14.0,
-                                color: Colors.black87,
-                                fontWeight: FontWeight.w500,),
-                              decoration: InputDecoration(
-                                  hintText: "Enter Your Name",
+                                    //editing controller of this TextField
+                                    decoration: InputDecoration(
+                                        icon: Icon(Icons.calendar_today), //icon of text field
+                                        labelText: "Enter Date" //label text of field
+                                    ),
+                                    readOnly: true,
+                                    //set it true, so that user will not able to edit text
+                                    onTap: () async {
+                                      DateTime? pickedDate = await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime(1950),
+                                          //DateTime.now() - not to allow to choose before today.
+                                          lastDate: DateTime(2100));
 
-                                  hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w800,),
-                                  border: InputBorder.none),
+                                      if (pickedDate != null) {
+                                        print(
+                                            pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                        String formattedDate =
+                                        DateFormat('yyyy-MM-dd').format(pickedDate);
+                                        print(
+                                            formattedDate); //formatted date output using intl package =>  2021-03-16
+                                        setState(() {
+                                          dateInput.text =
+                                              formattedDate; //set output date to TextField value.
+                                        });
+                                      } else {}
+                                    },
+                                  ))),
+                            Container(height: 15,),
+
+                           Container(
+                        alignment: Alignment.center,
+                          height: size.height / 12,
+
+                          //margin: const EdgeInsets.only(left: 5,right: 5),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color:  Colors.white,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0,),
+                            child: Row(
+                             // crossAxisAlignment: CrossAxisAlignment.center,
+                               //mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                //mail icon
+                                Icon(CupertinoIcons.person),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+
+                                //divider svg
+                                SvgPicture.string(
+                                  '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
+                                  width: 1.0,
+                                  height: 15.5,
+                                  color: Colors.black87,
+                                ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+
+                                //email address textField
+                                Expanded(
+                                  child: TextField(
+                                    controller: username,
+                                    maxLines: 1,
+                                    cursorColor: Colors.black87,
+                                    onChanged: (value) {
+                                      if(value.isNotEmpty){
+                                      setState(() {
+                                        UserNameAllert ="";
+                                      });
+                                      }
+                                    },
+                                    keyboardType: TextInputType.emailAddress,
+                                    style: TextStyle(   fontSize: 14.0,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w500,),
+                                    decoration: InputDecoration(
+                                        hintText: "Enter Your Name",
+
+                                        hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w800,),
+                                        border: InputBorder.none),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
+                        ),
+
+
+                              Text(UserNameAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
+                                color: Colors.red,
+                                fontWeight: FontWeight.w800,),),
+
+                            Container(
+                              alignment: Alignment.center,
+                              height: size.height / 12,
+
+                              //margin: const EdgeInsets.only(left: 5,right: 5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color:  Colors.white,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0,),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    //mail icon
+
+
+                                    //email address textField
+                                    Expanded(
+                                      child: TextField(
+                                        controller: Description,
+                                        maxLines: 95,
+                                        cursorColor: Colors.black87,
+                                        onChanged: (value) {
+                                          if(value.isNotEmpty){
+                                            setState(() {
+                                              DescAllert ="";
+                                            });
+                                          }
+                                        },
+                                        keyboardType: TextInputType.emailAddress,
+                                        style: TextStyle(   fontSize: 14.0,
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w500,),
+                                        decoration: InputDecoration(
+                                            hintText: "Enter Description",
+
+                                            hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
+                                              color: Colors.black87,
+                                              fontWeight: FontWeight.w800,),
+                                            border: InputBorder.none),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+
+                              Text(DescAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
+                                color: Colors.red,
+                                fontWeight: FontWeight.w800,),),
+
+                            Container(
+                              width: size.width,
+                              height: 50,
+
+                              padding: EdgeInsets.all(5.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(
+                                    color: Colors.white, style: BorderStyle.solid, width: 0.80),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton(
+                                  elevation: 0,
+                                  value: pvalue,
+
+                                  icon: Icon(Icons.keyboard_arrow_down),
+
+                                  items:itemsissue.map((String items) {
+                                    return DropdownMenuItem(
+                                        value: items,
+                                        child: Text(items)
+                                    );
+                                  }
+                                  ).toList(),
+
+                                  onChanged: (String? newValue){
+                                    setState(() {
+                                      dropdownvalue = newValue!;
+                                    });
+                                  },
+
+                                ),
+                              ),
+                            ),
+                            Container(height: 20,),
+                            Container(
+                              width: size.width,
+                              height: 50,
+
+                              padding: EdgeInsets.all(5.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(
+                                    color: Colors.white, style: BorderStyle.solid, width: 0.80),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton(
+                                  elevation: 0,
+                                  value: dropdownvalue,
+
+                                  icon: Icon(Icons.keyboard_arrow_down),
+
+                                  items:items.map((String items) {
+                                    return DropdownMenuItem(
+                                        value: items,
+                                        child: Text(items)
+                                    );
+                                  }
+                                  ).toList(),
+
+                                  onChanged: (String? newValue){
+                                    setState(() {
+                                      dropdownvalue = newValue!;
+                                    });
+                                  },
+
+                                ),
+                              ),
+                            ),
+                            Container(height: 15,),
+                            Container(
+                              alignment: Alignment.center,
+                              height: size.height / 12,
+
+                              //margin: const EdgeInsets.only(left: 5,right: 5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color:  Colors.white,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0,),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    //mail icon
+                                    Icon(CupertinoIcons.device_desktop),
+                                    const SizedBox(
+                                      width: 16,
+                                    ),
+
+                                    //divider svg
+                                    SvgPicture.string(
+                                      '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
+                                      width: 1.0,
+                                      height: 15.5,
+                                      color: Colors.black87,
+                                    ),
+                                    const SizedBox(
+                                      width: 16,
+                                    ),
+
+                                    //email address textField
+                                    Expanded(
+                                      child: TextField(
+                                        controller: issuedetails,
+                                        maxLines: 1,
+                                        cursorColor: Colors.black87,
+                                        keyboardType: TextInputType.emailAddress,
+                                        style: TextStyle(   fontSize: 14.0,
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w500,),
+                                        decoration: InputDecoration(
+                                            hintText: "Enter Issue Details",
+
+                                            hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
+                                              color: Colors.black87,
+                                              fontWeight: FontWeight.w800,),
+                                            border: InputBorder.none),
+                                        onChanged: (value) {
+                                          if(value.isNotEmpty){
+                                            setState(() {
+                                              IssueAllert = "";
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ),
+
+                                  ],
+                                ),
+                              ),
+                            ),
+
+
+                            Text(IssueAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w800,),),
+
+                            Container(
+                              alignment: Alignment.center,
+                              height: size.height / 12,
+
+                              //margin: const EdgeInsets.only(left: 5,right: 5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color:  Colors.white,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0,),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    //mail icon
+                                    Icon(CupertinoIcons.decrease_indent),
+                                    const SizedBox(
+                                      width: 16,
+                                    ),
+
+                                    //divider svg
+                                    SvgPicture.string(
+                                      '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
+                                      width: 1.0,
+                                      height: 15.5,
+                                      color: Colors.black87,
+                                    ),
+                                    const SizedBox(
+                                      width: 16,
+                                    ),
+
+                                    //email address textField
+                                    Expanded(
+                                      child: TextField(
+                                        controller: issuecode,
+                                        maxLines: 1,
+                                        onChanged: (value) {
+                                          if(value.isNotEmpty){
+                                            setState(() {
+                                              CodeAllert = "";
+                                            });
+                                          }
+                                        },
+                                        cursorColor: Colors.black87,
+                                        keyboardType: TextInputType.emailAddress,
+                                        style: TextStyle(   fontSize: 14.0,
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w500,),
+                                        decoration: InputDecoration(
+                                            hintText: "Enter Issue code",
+
+                                            hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
+                                              color: Colors.black87,
+                                              fontWeight: FontWeight.w800,),
+                                            border: InputBorder.none),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+
+                              Text(CodeAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
+                                color: Colors.red,
+                                fontWeight: FontWeight.w800,),),
+                            Container(height: 30,),
+
+                            Container(
+                              alignment: Alignment.center,
+                              height: size.height / 13,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: const Color(0xFFF56B3F),
+                              ),
+                              child: InkWell(
+                                onTap: () {
+                                  if(issuecode.text==""||issuedetails.text==""||username.text==""||Description==""){
+                                    Navigator.of(context).pop();
+                                    TicketCreate(size);
+
+                                    setState(() {
+                                      IssueAllert = "Enter the Issue Detail";
+                                      CodeAllert = "Enter the Issue Code";
+                                      UserNameAllert = "Enter the UserName";
+                                      DescAllert = "Enter the Description";
+                                    });
+                                  }
+                                  else{
+                                    CreateTicket(username.text,Description.text,issuecode.text,issuedetails.text,dropdownvalue,pvalue,dateInput.text);
+                                  }
+
+                                  /* Navigator.pushReplacement(
+                                    context, CupertinoPageRoute(builder: (_) =>  MainPage()));*/
+
+                                },
+                                child: Text(
+                                    'Sign in',
+                                    style: TextStyle( fontSize: 16.0,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,)
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                      Container(height: 10,),
-                      Container(
-                        alignment: Alignment.center,
-                        height: size.height / 12,
-
-                        //margin: const EdgeInsets.only(left: 5,right: 5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color:  Colors.white,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0,),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              //mail icon
 
 
-                              //email address textField
-                              Expanded(
-                                child: TextField(
-                                  controller: username,
-                                  maxLines: 95,
-                                  cursorColor: Colors.black87,
-                                  keyboardType: TextInputType.emailAddress,
-                                  style: TextStyle(   fontSize: 14.0,
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w500,),
-                                  decoration: InputDecoration(
-                                      hintText: "Enter Description",
-
-                                      hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w800,),
-                                      border: InputBorder.none),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(height: 10,),
-                      Container(
-                        width: size.width,
-                        height: 50,
-
-                        padding: EdgeInsets.all(5.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                              color: Colors.white, style: BorderStyle.solid, width: 0.80),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                            elevation: 0,
-                            value: pvalue,
-
-                            icon: Icon(Icons.keyboard_arrow_down),
-
-                            items:itemsissue.map((String items) {
-                              return DropdownMenuItem(
-                                  value: items,
-                                  child: Text(items)
-                              );
-                            }
-                            ).toList(),
-
-                            onChanged: (String? newValue){
-                              setState(() {
-                                dropdownvalue = newValue!;
-                              });
-                            },
-
-                          ),
-                        ),
-                      ),
-                      Container(height: 10,),
-                      Container(
-                        width: size.width,
-                        height: 50,
-
-                        padding: EdgeInsets.all(5.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                              color: Colors.white, style: BorderStyle.solid, width: 0.80),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                            elevation: 0,
-                            value: dropdownvalue,
-
-                            icon: Icon(Icons.keyboard_arrow_down),
-
-                            items:items.map((String items) {
-                              return DropdownMenuItem(
-                                  value: items,
-                                  child: Text(items)
-                              );
-                            }
-                            ).toList(),
-
-                            onChanged: (String? newValue){
-                              setState(() {
-                                dropdownvalue = newValue!;
-                              });
-                            },
-
-                          ),
-                        ),
-                      ),
-                      Container(height: 10,),
-                      Container(
-                        alignment: Alignment.center,
-                        height: size.height / 12,
-
-                        //margin: const EdgeInsets.only(left: 5,right: 5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color:  Colors.white,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0,),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              //mail icon
-                              Icon(CupertinoIcons.device_desktop),
-                              const SizedBox(
-                                width: 16,
-                              ),
-
-                              //divider svg
-                              SvgPicture.string(
-                                '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
-                                width: 1.0,
-                                height: 15.5,
-                                color: Colors.black87,
-                              ),
-                              const SizedBox(
-                                width: 16,
-                              ),
-
-                              //email address textField
-                              Expanded(
-                                child: TextField(
-                                  controller: issuedetails,
-                                  maxLines: 1,
-                                  cursorColor: Colors.black87,
-                                  keyboardType: TextInputType.emailAddress,
-                                  style: TextStyle(   fontSize: 14.0,
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w500,),
-                                  decoration: InputDecoration(
-                                      hintText: "Enter Issue Details",
-
-                                      hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w800,),
-                                      border: InputBorder.none),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(height: 10,),
-                      Container(
-                        alignment: Alignment.center,
-                        height: size.height / 12,
-
-                        //margin: const EdgeInsets.only(left: 5,right: 5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color:  Colors.white,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0,),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              //mail icon
-                              Icon(CupertinoIcons.decrease_indent),
-                              const SizedBox(
-                                width: 16,
-                              ),
-
-                              //divider svg
-                              SvgPicture.string(
-                                '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
-                                width: 1.0,
-                                height: 15.5,
-                                color: Colors.black87,
-                              ),
-                              const SizedBox(
-                                width: 16,
-                              ),
-
-                              //email address textField
-                              Expanded(
-                                child: TextField(
-                                  controller: issuecode,
-                                  maxLines: 1,
-                                  cursorColor: Colors.black87,
-                                  keyboardType: TextInputType.emailAddress,
-                                  style: TextStyle(   fontSize: 14.0,
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w500,),
-                                  decoration: InputDecoration(
-                                      hintText: "Enter Issue code",
-
-                                      hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w800,),
-                                      border: InputBorder.none),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(height: 10,),
-                      Container(
-                        alignment: Alignment.center,
-                        height: size.height / 13,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: const Color(0xFFF56B3F),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            if(issuecode.text==""){
-                              showDialog(
-                                context: context,
-                                builder: (_) {
-                                  return  AlertDialog(
-                                    elevation: 14,
-                                    backgroundColor: MyColors.AppthemeColor,
-                                    title: Center(child: Text('Please Enter the Email', style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4))),
-
-                                  );
-                                },
-                              );
-                            }
-                            else if(issuedetails.text==""){
-                              showDialog(
-                                context: context,
-                                builder: (_) {
-                                  return  AlertDialog(
-                                    elevation: 14,
-                                    backgroundColor: MyColors.AppthemeColor,
-                                    title: Text('Please Enter the Password',style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4)),
-
-                                  );
-                                },
-                              );
-                            }
-                            else{
-
-                            }
-
-                            /* Navigator.pushReplacement(
-    context, CupertinoPageRoute(builder: (_) =>  MainPage()));*/
-
-                          },
-                          child: Text(
-                              'Sign in',
-                              style: TextStyle( fontSize: 16.0,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,)
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -397,26 +588,201 @@ class _TicketPageState extends State<TicketPage> {
     );
 
   }
+  void RaedAllTickets() async {
+    var client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
 
+
+    var response = await client.get(Uri.parse('https://elteesolutions.com/helpdesk/apinewticket'),headers: {'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+      'Content-Type': 'application/json',
+      'Cookie': 'ci_session=3gnid18nsvll4u99839vfroba1ihd58t; csrfcookiei2help=4912ec8965916cc488eeb6aa70918fa7'
+    });
+
+
+    if (response.statusCode == 200) {
+      print(await response.body);
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
   @override
+  void initState() {
+    // TODO: implement initState
+    RaedAllTickets();
+  }
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return   Stack(
-      children: [
-
-        Container(
-          height: size.height/1.4,
-         // width: size.width/2,
-          margin: const EdgeInsets.only(top: 40),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(topRight: Radius.circular(50),topLeft: Radius.circular(50) ),
+    return   Scaffold(
+      backgroundColor: MyColors.AppthemeColor,
+      bottomSheet: Container(
+        width: size.width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+        BoxShadow(
+        color: Colors.black12,
+          blurRadius: 3.0,
+          spreadRadius: 3.0,
+        ), //BoxShadow
+      ]),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: SizedBox(
+              height:50,width: size.width/1,
+              child:ElevatedButton(
+                onPressed: (){
+                  TicketCreate(size);
+                },
+                child: Center(
+                  child: Row(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add,color: Colors.white,weight: 66,),
+                      Text("  Create New Ticket",style: GoogleFonts.quicksand( fontSize: 25.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,)),
+                    ],
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:   Color(0xFFF56B3F),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      //border radius equal to or more than 50% of width
+                    )
+                ),
+              )
           ),
         ),
-        Positioned(
-          bottom: 50,right: 15,
-            child: FloatingActionButton(onPressed: () { TicketCreate(size); },child: const Icon(CupertinoIcons.create_solid,color: MyColors.AppthemeColor,),)),
-      ],
+      ),
+      //floatingActionButton: FloatingActionButton(onPressed: () {  },child: const Icon(CupertinoIcons.create_solid,color: MyColors.AppthemeColor,),),
+      body:    Container(
+            margin: const EdgeInsets.only(top: 10),
+            decoration:  BoxDecoration(
+
+             // borderRadius: BorderRadius.only(topRight: Radius.circular(50),topLeft: Radius.circular(50) ),
+
+            ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(38.0),
+                      ),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            offset: const Offset(0, 2),
+                            blurRadius: 8.0),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16, right: 16, top: 4, bottom: 4),
+                      child: TextField(
+                        onChanged: (String txt) {},
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                        cursorColor: MyColors.AppthemeColor,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Search Ticket No',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+      DefaultTabController(
+        length: 4,
+        child: Column(
+          children: <Widget>[
+            ButtonsTabBar(
+              backgroundColor: Colors.red,
+              unselectedBackgroundColor: Colors.grey[300],
+              unselectedLabelStyle: TextStyle(color: Colors.black),
+              labelStyle:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              tabs: const [
+                Tab(
+                  text: "All"+" 33",
+                ),
+                Tab(
+                  text: "Open"+" 33",
+                ),
+                Tab(
+                  text: "Pending"+" 33",
+                ),
+                Tab(
+                  text: "Closed"+" 33",
+                ),
+
+              ],
+            ),
+            const Expanded(
+              child: TabBarView(
+                children: <Widget>[
+                  Center(
+                    child: Icon(Icons.directions_car),
+                  ),
+                  Center(
+                    child: Icon(Icons.directions_transit),
+                  ),
+                  Center(
+                    child: Icon(Icons.directions_bike),
+                  ),
+                  Center(
+                    child: Icon(Icons.directions_car),
+                  ),
+
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(38.0),
+                  ),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        color: Colors.grey.withOpacity(0.4),
+                        offset: const Offset(0, 2),
+                        blurRadius: 8.0),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(32.0),
+                    ),
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(CupertinoIcons.search,
+                          size: 20,
+                          color: Colors.black),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+          ),
     );
   }
 }

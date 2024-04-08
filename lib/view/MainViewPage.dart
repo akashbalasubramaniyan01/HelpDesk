@@ -127,33 +127,35 @@ void initState() {
     body:  Scaffold(
       backgroundColor:   const Color(0xFF21899C),
     body: SingleChildScrollView(
-      child:Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 15,top: 10),
-            child: Text.rich(
-              TextSpan(
-                style:TextStyle(  fontSize: 23.12,
-                  color: Colors.white,
-                  letterSpacing: 1.999999953855673,),
-                children:  [
-                  TextSpan(
-                    text: 'Hello\n',
-                      style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.bodyLarge)
-                  ),
-                  TextSpan(
-                    text: widget.LoginModels[0].name,
-                    style: GoogleFonts.openSans(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
+          /* Padding(
+              padding: const EdgeInsets.only(left: 15,top: 10),
+              child: Text.rich(
+                TextSpan(
+                  style:TextStyle(  fontSize: 23.12,
+                    color: Colors.white,
+                    letterSpacing: 1.999999953855673,),
+                  children:  [
+                    TextSpan(
+                      text: 'Hello\n',
+                        style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.bodyLarge)
                     ),
-                  ),
-                ],
+                    TextSpan(
+                      text: widget.LoginModels[0].name,
+                      style: GoogleFonts.openSans(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-          TicketPage()
+            ),*/
+          Container(
+              height: size.height/1.2,
+              width: size.width/1,child: TicketPage())
         ],
       ),
     ),

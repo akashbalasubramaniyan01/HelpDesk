@@ -31,62 +31,71 @@ class _SignInFiveState extends State<SignInFive> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
   LogiApiCall(Email,Password) async {
-    DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
-    var url = "${GlobalConfiguration().get("ApiURl")}apilogin";
-    print(url);
-    http.Response response = await client.post(
-        Uri.parse(url),
-      headers:   {
-        'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
-        'Content-Type': 'application/json',
-        'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
-      },
+    try{
+      DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
+      var url = "${GlobalConfiguration().get("ApiURl")}apilogin";
+      print(url);
+      http.Response response = await client.post(
+          Uri.parse(url),
+          headers:   {
+            'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+            'Content-Type': 'application/json',
+            'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
+          },
 
-      body: json.encode({
-        "userid": Email,
-        "password": Password,
-        "count": 0
-        /*"userid": "muralimanoharan@ri-square.com",
+          body: json.encode({
+            "userid": Email,
+            "password": Password,
+            "count": 0
+            /*   "userid": "muralimanoharan@ri-square.com",
       "password": "Test@123",
       "count": 0*/
-      })
-    );
-
-    if (response.statusCode == 200) {
-    setState(() {
-      print( response.body);
-      var jsonResponse = json.decode(response.body);
-
-      LoginModels = [jsonResponse]
-          .map((taskJson) => LoginModel.fromJson(taskJson))
-          .toList();
-      Navigator.pushReplacement(
-          context, CupertinoPageRoute(builder: (_) =>  MainPage(LoginModels)));
-
-    }); }
-    else {
-      final materialBanner = MaterialBanner(
-        /// need to set following properties for best effect of awesome_snackbar_content
-        elevation: 2,
-        backgroundColor: Colors.transparent,
-        forceActionsBelow: false,
-        content: AwesomeSnackbarContent(
-          title: 'Failure',
-          message:
-          'Username And Password invalid!!!',
-
-          /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
-          contentType: ContentType.failure,
-          // to configure for material banner
-          inMaterialBanner: true,
-        ),
-        actions: const [SizedBox.shrink()],
+          })
       );
 
-      ScaffoldMessenger.of(context)
-        ..hideCurrentMaterialBanner()
-        ..showMaterialBanner(materialBanner);
+      if (response.statusCode == 200) {
+        setState(() {
+          print( response.body);
+          var jsonResponse = json.decode(response.body);
+
+          LoginModels = [jsonResponse]
+              .map((taskJson) => LoginModel.fromJson(taskJson))
+              .toList();
+          Navigator.pushReplacement(
+              context, CupertinoPageRoute(builder: (_) =>  MainPage(LoginModels)));
+
+        }); }
+      else {
+        final materialBanner = MaterialBanner(
+          /// need to set following properties for best effect of awesome_snackbar_content
+          elevation: 2,
+          backgroundColor: Colors.transparent,
+          forceActionsBelow: false,
+          content: AwesomeSnackbarContent(
+            title: 'Failure',
+            message:
+            'Username And Password invalid!!!',
+
+            /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+            contentType: ContentType.failure,
+            // to configure for material banner
+            inMaterialBanner: true,
+          ),
+          actions: const [SizedBox.shrink()],
+        );
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentMaterialBanner()
+          ..showMaterialBanner(materialBanner);
+      }
+
     }
+    catch (e)
+    {
+      print(e);
+    }
+
+
   }
   @override
   Widget build(BuildContext context) {
