@@ -3,20 +3,16 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:helpdesk/utils/colors.dart';
 import 'package:helpdesk/view/MainViewPage.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'dart:convert' as convert;
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:helpdesk/view/login.dart';
-
+import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'package:global_configuration/global_configuration.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:http_auth/http_auth.dart';
 
 import '../model/LoginModel.dart';
-
-
 
 class SignInFive extends StatefulWidget {
   const SignInFive({Key? key}) : super(key: key);
@@ -26,78 +22,93 @@ class SignInFive extends StatefulWidget {
 }
 
 class _SignInFiveState extends State<SignInFive> {
-
- List <LoginModel>LoginModels=[];
-
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
-  LogiApiCall(Email,Password) async {
-    try{
-      DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
-      var url = "${GlobalConfiguration().get("ApiURl")}apilogin";
-      print(url);
-      http.Response response = await client.post(
-          Uri.parse(url),
-          headers:   {
-            'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
-            'Content-Type': 'application/json',
-            'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
-          },
+  late LoginModel LoginModelData ;
 
+  Future<void> makeRequest(String Email, String Password) async {
+
+    final url = Uri.parse("https://elteesolutions.com/helpdesk/apilogin");
+    var client = DigestAuthClient("ri2helpdeskuser", r'6i$qu@6e');
+    final responses = await client.post(
+           url,
           body: json.encode({
-            "userid": Email,
-            "password": Password,
-            "count": 0
-            /*   "userid": "muralimanoharan@ri-square.com",
-      "password": "Test@123",
-      "count": 0*/
-          })
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          print( response.body);
-          var jsonResponse = json.decode(response.body);
-
-          LoginModels = [jsonResponse]
-              .map((taskJson) => LoginModel.fromJson(taskJson))
-              .toList();
-          Navigator.pushReplacement(
-              context, CupertinoPageRoute(builder: (_) =>  MainPage(LoginModels)));
-
-        }); }
-      else {
-        final materialBanner = MaterialBanner(
-          /// need to set following properties for best effect of awesome_snackbar_content
-          elevation: 2,
-          backgroundColor: Colors.transparent,
-          forceActionsBelow: false,
-          content: AwesomeSnackbarContent(
-            title: 'Failure',
-            message:
-            'Username And Password invalid!!!',
-
-            /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
-            contentType: ContentType.failure,
-            // to configure for material banner
-            inMaterialBanner: true,
-          ),
-          actions: const [SizedBox.shrink()],
-        );
-
-        ScaffoldMessenger.of(context)
-          ..hideCurrentMaterialBanner()
-          ..showMaterialBanner(materialBanner);
+          "userid": Email,
+          "password": Password,
+          "count": 0
+          }),
+      headers: {
+        'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+        'Content-Type': 'application/json',
       }
 
+    );
+    if(responses.statusCode==200){
+
+
+      String mlconvertdata = utf8.decode(responses.bodyBytes);
+      var loginObjsJson = jsonDecode(mlconvertdata);
+setState(() {
+  LoginModelData = LoginModel.fromJson(loginObjsJson);
+});
+      Navigator.pushReplacement(
+          context, CupertinoPageRoute(builder: (_) =>  MainPage(LoginModelData)));
     }
-    catch (e)
-    {
-      print(e);
+    else{
+      print("Invalid Details");
+      final snackBar = SnackBar(
+        elevation: 1,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          title: 'Failure!',
+          message: "Invalid Username & Password",
+          /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+          contentType: ContentType.failure,
+        ),
+      );
+      ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(snackBar);
     }
+
 
 
   }
+
+
+/*  LogiApiCall(Email,Password) async {
+    String cookieValue = 'ci_session=rad5k9s0h4dgea8ifsm1oj2ma4s4rruq';
+
+    var headers = {
+      'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+      'Content-Type': 'application/json',
+      'Cookie': cookieValue
+    };
+
+
+    var url = "${GlobalConfiguration().get("ApiURl")}apilogin";
+    print(url);
+
+    var request = http.Request('POST', Uri.parse(url));
+    request.body = json.encode({
+      "userid": Email,
+      "password": Password,
+      "count": 0
+   *//*   "userid": "muralimanoharan@ri-square.com",
+      "password": "Test@123",
+      "count": 0*//*
+    });
+    print(request.body);
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+    }
+    else {
+      print(response.reasonPhrase);
+    }
+  }*/
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -135,7 +146,7 @@ class _SignInFiveState extends State<SignInFive> {
 
               //content ui
               Positioned(
-                top: 35.0,
+                top: 8.0,
                 child: SizedBox(
                   width: size.width,
                   height: size.height,
@@ -163,8 +174,9 @@ class _SignInFiveState extends State<SignInFive> {
                         Expanded(
                           flex: 1,
                           child: Text(
-                              'Continue with email for sign in App',
-                              style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4)
+                            'Continue with email for sign in App',
+                            style: TextStyle( fontSize: 14.0,
+                              color: Colors.white,)
                           ),
                         ),
 
@@ -188,7 +200,7 @@ class _SignInFiveState extends State<SignInFive> {
 
                         //sign in button & continue with text here
                         Expanded(
-                          flex: 5,
+                          flex: 3,
                           child: Column(
                             children: [
                               signInButton(size,emailController.text,passController.text),
@@ -201,7 +213,7 @@ class _SignInFiveState extends State<SignInFive> {
                         ),
 
                         //footer section. google, facebook button and sign up text here
-                        /*     Expanded(
+                   /*     Expanded(
                           flex: 4,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -240,23 +252,19 @@ class _SignInFiveState extends State<SignInFive> {
         style:TextStyle(  fontSize: 23.12,
           color: Colors.white,
           letterSpacing: 1.999999953855673,),
-        children:  [
+        children: const [
           TextSpan(
             text: 'HELP',
-              style: GoogleFonts.poppins(color: Colors.white,
-                fontSize:38,
-                fontWeight: FontWeight.w800,)    ),
-           TextSpan(
-            text: ' DESK',
-              style: GoogleFonts.poppins(color: Color(0xFFFE9879),
-               fontSize:38,
-                fontWeight: FontWeight.w800,)
-
-             /* style: TextStyle(
-              color: Color(0xFFFE9879),
-              fontFamily: "OpenSansBold",
+            style: TextStyle(
               fontWeight: FontWeight.w800,
-            ),*/
+            ),
+          ),
+          TextSpan(
+            text: 'DESK',
+            style: TextStyle(
+              color: Color(0xFFFE9879),
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ],
       ),
@@ -408,10 +416,10 @@ class _SignInFiveState extends State<SignInFive> {
           width: 16,
         ),
         Text(
-            'Remember me',
-            style: TextStyle(   fontSize: 14.0,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,)
+          'Remember me',
+          style: TextStyle(   fontSize: 14.0,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,)
         ),
       ],
     );
@@ -426,46 +434,19 @@ class _SignInFiveState extends State<SignInFive> {
         color: const Color(0xFFF56B3F),
       ),
       child: InkWell(
-        onTap: () {
-           if(emailController.text==""){
-             showDialog(
-               context: context,
-               builder: (_) {
-                 return  AlertDialog(
-                   elevation: 14,
-                   backgroundColor: MyColors.AppthemeColor,
-                   title: Center(child: Text('Please Enter the Email', style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4))),
+        onTap: () async {
+          makeRequest(email,password);
 
-                 );
-               },
-             );
-           }
-           else if(passController.text==""){
-             showDialog(
-               context: context,
-               builder: (_) {
-                 return  AlertDialog(
-                   elevation: 14,
-                   backgroundColor: MyColors.AppthemeColor,
-                   title: Text('Please Enter the Password',style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4)),
-
-                 );
-               },
-             );
-           }
-           else{
-             LogiApiCall(email,password);
-           }
-
-          /* Navigator.pushReplacement(
+         // LogiApiCall(email,password);
+   /* Navigator.pushReplacement(
     context, CupertinoPageRoute(builder: (_) =>  MainPage()));*/
 
         },
         child: Text(
-            'Sign in',
-            style: TextStyle( fontSize: 16.0,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,)
+          'Sign in',
+          style: TextStyle( fontSize: 16.0,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,)
         ),
       ),
     );
@@ -476,7 +457,7 @@ class _SignInFiveState extends State<SignInFive> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        /*   const Expanded(
+     /*   const Expanded(
             child: Divider(
               color: Colors.white,
             )),*/
@@ -566,10 +547,10 @@ class _SignInFiveState extends State<SignInFive> {
 
               //facebook txt
               Text(
-                  'Facebook',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14.0,
-                    color: Colors.white,)
+                'Facebook',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14.0,
+                  color: Colors.white,)
               ),
             ],
           ),
@@ -587,13 +568,13 @@ class _SignInFiveState extends State<SignInFive> {
             color: Colors.white,),
           children: [
             TextSpan(
-                text: 'Don’t have account? ',
-                style: TextStyle(fontWeight: FontWeight.w600,)
+              text: 'Don’t have account? ',
+              style: TextStyle(fontWeight: FontWeight.w600,)
             ),
             TextSpan(
-                text: 'Sign up',
-                style: TextStyle(    color: const Color(0xFFF9CA58),
-                  fontWeight: FontWeight.w600,)
+              text: 'Sign up',
+              style: TextStyle(    color: const Color(0xFFF9CA58),
+                fontWeight: FontWeight.w600,)
             ),
           ],
         ),

@@ -1,18 +1,19 @@
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bottom_animation/bottom_animation.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:helpdesk/model/LoginModel.dart';
+import 'package:helpdesk/theme/extention.dart';
 import 'package:helpdesk/utils/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../model/LoginModel.dart';
-import 'TicketList.dart';
-import 'package:flutter_svg/svg.dart';
+import '../theme/text_styles.dart';
+
 class MainPage extends StatefulWidget {
-   List <LoginModel> LoginModels;
-   MainPage(this.LoginModels);
+  var LoginModelData;
+
+   MainPage(this.LoginModelData);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -47,6 +48,7 @@ void initState() {
   }
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF21899C),
@@ -76,7 +78,7 @@ void initState() {
                 ),
               ),
               TextSpan(
-                text: ' DESK',
+                text: 'DESK',
                 style: TextStyle(
                   color: Color(0xFFFE9879),
                   fontWeight: FontWeight.w800,
@@ -127,35 +129,39 @@ void initState() {
     body:  Scaffold(
       backgroundColor:   const Color(0xFF21899C),
     body: SingleChildScrollView(
-      child: Column(
+      child:Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /* Padding(
-              padding: const EdgeInsets.only(left: 15,top: 10),
-              child: Text.rich(
-                TextSpan(
-                  style:TextStyle(  fontSize: 23.12,
-                    color: Colors.white,
-                    letterSpacing: 1.999999953855673,),
-                  children:  [
-                    TextSpan(
-                      text: 'Hello\n',
-                        style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.bodyLarge)
-                    ),
-                    TextSpan(
-                      text: widget.LoginModels[0].name,
-                      style: GoogleFonts.openSans(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
+          Padding(
+            padding: const EdgeInsets.only(left: 15,top: 10),
+            child: Text.rich(
+              TextSpan(
+                style:TextStyle(  fontSize: 16,
+                  color: Colors.white,
+                  letterSpacing: 1.999999953855673,),
+                children:  [
+                  TextSpan(
+                    text: 'Hello\n',
+                    style: TextStyles.title.subTitleColor,
+                  ),
+                  TextSpan(
+                    text: widget.LoginModelData.name,
+                    style: GoogleFonts.poppins(textStyle: Theme.of(context).textTheme.headline4),
+
+
+                  ),
+                ],
               ),
-            ),*/
+            ),
+          ),
           Container(
-              height: size.height/1.3,
-              width: size.width/1,child: TicketPage())
+            height: size.height/1.5,
+            margin: const EdgeInsets.only(top: 40),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(topRight: Radius.circular(50),topLeft: Radius.circular(50) ),
+            ),
+          ),
         ],
       ),
     ),

@@ -51,12 +51,17 @@ dev_dependencies:
   shimmer: ^2.0.0
   quickalert: ^1.0.2
   awesome_snackbar_content: ^0.1.3
-  google_fonts: ^6.2.0
+  google_fonts: 6.1.0
   bottom_animation: ^2.0.0
   flutter_svg: ^2.0.10+1
   curved_navigation_bar: ^1.0.3
   http: ^1.2.0
-  global_configuration: ^2.0.0-nullsafety.1
+  global_configuration: ^2.0.0-nullsafety.13
+  crypto: ^3.0.3
+  http_auth: ^1.0.4
+  buttons_tabbar: ^1.3.8
+
+
 
 
 # For information on the generic Dart part of this file, see the
