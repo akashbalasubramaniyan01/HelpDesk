@@ -1,11 +1,20 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:helpdesk/utils/colors.dart';
 import 'package:helpdesk/view/home_page.dart';
 import 'package:global_configuration/global_configuration.dart';
 
 import 'config/axpertAppSettings.dart';
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  }
+}
 Future<void> main() async {
+  HttpOverrides.global = MyHttpOverrides();
   GlobalConfiguration().loadFromMap(AppSettings);
   runApp(const MyApp());
 }

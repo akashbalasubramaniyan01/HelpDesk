@@ -11,8 +11,8 @@ import '../model/LoginModel.dart';
 import 'TicketList.dart';
 import 'package:flutter_svg/svg.dart';
 class MainPage extends StatefulWidget {
-   List <LoginModel> LoginModels;
-   MainPage(this.LoginModels);
+   /*List <LoginModel> LoginModels;*/
+   MainPage(/*this.LoginModels*/);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -39,6 +39,7 @@ class _MainPageState extends State<MainPage> {
           height: 24,)),
   ];
   var cIndex;
+  int ToatalCount =0;
   @override
 void initState() {
     cIndex = 0;
@@ -154,12 +155,20 @@ void initState() {
               ),
             ),*/
           Container(
-              height: size.height/1.2,
-              width: size.width/1,child: TicketPage())
+
+              width: size.width/1,
+              height: size.height/1.3,
+              child: TicketPage(TotalTicketCount))
         ],
       ),
     ),
 
     ));
+  }
+  TotalTicketCount(var TicketData){
+    setState(() {
+
+      ToatalCount = TicketData.length;
+    });
   }
 }

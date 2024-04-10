@@ -22,8 +22,10 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:http_auth/http_auth.dart';
 import 'package:intl/intl.dart';
 import '../model/LoginModel.dart';
+import 'TicketDetails.dart';
 class TicketPage extends StatefulWidget {
-  const TicketPage({super.key});
+  Function TotalTicketCount;
+   TicketPage(this.TotalTicketCount);
 
   @override
   State<TicketPage> createState() => _TicketPageState();
@@ -59,8 +61,6 @@ class _TicketPageState extends State<TicketPage> {
           "details": issuedetails,
           "usrname": Username,
           "ccode": issuecode
-
-
         }),
 
         headers:   {
@@ -241,6 +241,7 @@ class _TicketPageState extends State<TicketPage> {
 
                                 //email address textField
                                 Expanded(
+                                  flex: 1,
                                   child: TextField(
                                     controller: username,
                                     maxLines: 1,
@@ -294,6 +295,7 @@ class _TicketPageState extends State<TicketPage> {
 
                                     //email address textField
                                     Expanded(
+                                      flex: 1,
                                       child: TextField(
                                         controller: Description,
                                         maxLines: 95,
@@ -433,6 +435,7 @@ class _TicketPageState extends State<TicketPage> {
 
                                     //email address textField
                                     Expanded(
+                                      flex: 1,
                                       child: TextField(
                                         controller: issuedetails,
                                         maxLines: 1,
@@ -501,6 +504,7 @@ class _TicketPageState extends State<TicketPage> {
 
                                     //email address textField
                                     Expanded(
+                                      flex: 1,
                                       child: TextField(
                                         controller: issuecode,
                                         maxLines: 1,
@@ -588,9 +592,18 @@ class _TicketPageState extends State<TicketPage> {
     );
 
   }
+  var AllTickets =[];
+  var OpenTickets =[];
+  var searchFilterResult =[];
+  var ticket_data_api_list =[];
+  var ticket_data_filtered =[];
+  int ToatalCount = 0;
+  int OpenCount = 0;
+  int PendingCount = 0;
+  int ClosedCount = 0;
+
   void RaedAllTickets() async {
     var client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
-
 
     var response = await client.get(Uri.parse('https://elteesolutions.com/helpdesk/apinewticket'),headers: {'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
       'Content-Type': 'application/json',
@@ -599,7 +612,23 @@ class _TicketPageState extends State<TicketPage> {
 
 
     if (response.statusCode == 200) {
-      print(await response.body);
+     setState(() {
+       AllTickets.clear();
+       print( response.body);
+       var jsonResponse = json.decode(response.body);
+       var JsonData = jsonResponse['data'];
+       AllTickets.addAll(JsonData);
+       ticket_data_api_list.addAll(AllTickets);
+       print(ticket_data_api_list);
+
+       AllTickets.length;
+       OpenCount =  ticket_data_api_list.where((element) => element['Status']=="O").length;
+       ClosedCount =  ticket_data_api_list.where((element) => element['Status']=="C").length;
+       PendingCount =  ticket_data_api_list.where((element) => element['Status']=="P").length;
+
+       print(AllTickets);
+     });
+
     } else {
       print(response.reasonPhrase);
     }
@@ -614,7 +643,8 @@ class _TicketPageState extends State<TicketPage> {
     return   Scaffold(
       backgroundColor: MyColors.AppthemeColor,
       bottomSheet: Container(
-        width: size.width,
+        width: size.width/1,
+        height: 60,
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -625,7 +655,7 @@ class _TicketPageState extends State<TicketPage> {
         ), //BoxShadow
       ]),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.only(top: 10,bottom: 10,right: 25,left: 25),
           child: SizedBox(
               height:50,width: size.width/1,
               child:ElevatedButton(
@@ -637,7 +667,7 @@ class _TicketPageState extends State<TicketPage> {
                      mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.add,color: Colors.white,weight: 66,),
-                      Text("  Create New Ticket",style: GoogleFonts.quicksand( fontSize: 25.0,
+                      Text("  Create New Ticket",style: GoogleFonts.quicksand( fontSize: 16.0,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,)),
                     ],
@@ -656,20 +686,55 @@ class _TicketPageState extends State<TicketPage> {
       ),
       //floatingActionButton: FloatingActionButton(onPressed: () {  },child: const Icon(CupertinoIcons.create_solid,color: MyColors.AppthemeColor,),),
       body:    Container(
-            margin: const EdgeInsets.only(top: 10),
+            margin: const EdgeInsets.only(top: 0),
             decoration:  BoxDecoration(
 
              // borderRadius: BorderRadius.only(topRight: Radius.circular(50),topLeft: Radius.circular(50) ),
 
             ),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-                  child: Container(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(38.0),
+                          ),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                offset: const Offset(0, 2),
+                                blurRadius: 8.0),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, top: 4, bottom: 4),
+                          child: TextField(
+                            onChanged: (String txt) {},
+                            style: const TextStyle(
+                              fontSize: 18,
+                            ),
+                            cursorColor: MyColors.AppthemeColor,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Search Ticket No',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: const BorderRadius.all(
@@ -677,112 +742,214 @@ class _TicketPageState extends State<TicketPage> {
                       ),
                       boxShadow: <BoxShadow>[
                         BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
+                            color: Colors.grey.withOpacity(0.4),
                             offset: const Offset(0, 2),
                             blurRadius: 8.0),
                       ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16, right: 16, top: 4, bottom: 4),
-                      child: TextField(
-                        onChanged: (String txt) {},
-                        style: const TextStyle(
-                          fontSize: 18,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(32.0),
                         ),
-                        cursorColor: MyColors.AppthemeColor,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Search Ticket No',
+                        onTap: () {
+                          RaedAllTickets();
+                          FocusScope.of(context).requestFocus(FocusNode());
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Icon(CupertinoIcons.search,
+                              size: 20,
+                              color: Colors.black),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
-      DefaultTabController(
-        length: 4,
-        child: Column(
-          children: <Widget>[
-            ButtonsTabBar(
-              backgroundColor: Colors.red,
-              unselectedBackgroundColor: Colors.grey[300],
-              unselectedLabelStyle: TextStyle(color: Colors.black),
-              labelStyle:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              tabs: const [
-                Tab(
-                  text: "All"+" 33",
-                ),
-                Tab(
-                  text: "Open"+" 33",
-                ),
-                Tab(
-                  text: "Pending"+" 33",
-                ),
-                Tab(
-                  text: "Closed"+" 33",
-                ),
-
-              ],
-            ),
-            const Expanded(
-              child: TabBarView(
-                children: <Widget>[
-                  Center(
-                    child: Icon(Icons.directions_car),
-                  ),
-                  Center(
-                    child: Icon(Icons.directions_transit),
-                  ),
-                  Center(
-                    child: Icon(Icons.directions_bike),
-                  ),
-                  Center(
-                    child: Icon(Icons.directions_car),
-                  ),
-
                 ],
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Container(
+                width: size.width,height: size.height/1.4,
+                child: DefaultTabController(
+
+
+                  length: 4,
+                  child: Column(
+                    children: <Widget>[
+                      ButtonsTabBar(
+                         onTap: (value) {
+                           print(value);
+                           if(value==0){
+                             onFilterChanged("All");
+                           }
+                           else if(value==1){
+                             onFilterChanged("Open");
+                           }
+                           else if(value==2){
+                             onFilterChanged("Pending");
+                           }
+                           else if(value==3){
+                             onFilterChanged("Closed");
+                           }
+                         },
+
+                        borderWidth: 1,
+                        unselectedBorderColor: Colors.white,
+                        borderColor: Colors.white,
+                        backgroundColor: Color(0xFFF56B3F),
+                        unselectedBackgroundColor: Colors.grey[300],
+                        unselectedLabelStyle: GoogleFonts.quicksand(fontSize: 15,color: Colors.black,fontWeight: FontWeight.bold),
+                        labelStyle:
+                        GoogleFonts.quicksand(fontSize: 15,color: Colors.white,fontWeight: FontWeight.bold),
+                        tabs:  [
+
+                          Tab(
+                            text: "      All  ${AllTickets.length}    ",
+
+                          ),
+                          Tab(
+
+                            text: "    Open   ${OpenCount}  ",
+                          ),
+                          Tab(
+                            text: " Pending $PendingCount ",
+                          ),
+                          Tab(
+                            text: " Closed $ClosedCount ",
+                          ),
+
+                        ],
+                      ),
+
+                      Expanded(
+                        flex: 1,
+                        child: TabBarView(
+
+                          children: <Widget>[
+                        if(AllTickets.isNotEmpty)
+                            InkWell(
+                              child: Container(
+                                  margin: EdgeInsets.only(top: 10,),
+                                  color: Colors.white,
+                                  child: SingleChildScrollView(
+                                    child: Expanded(
+                                      flex: 1,
+                                      child: Container(
+
+                                        child: Column(
+                                          children: [
+                                            for(int i=0;i<AllTickets.length;i++)
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => TicketDeatils(AllTickets,i),));
+
+                                                },
+                                                child: SingleChildScrollView(
+                                                  child:  SingleChildScrollView(
+                                                    child: Card(
+                                                      color: MyColors.AppthemeColor,
+                                                      child: Container(
+                                                          width: size.width,
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.all(12),
+                                                            child: Row(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                              children: [
+                                                                Column(children: [
+                                                                  Text("Ticket No: "+AllTickets[i]['TicketNo'],style:  GoogleFonts.quicksand(fontSize: 15,color: Colors.white,fontWeight: FontWeight.bold),),
+                                                                  Text(AllTickets[i]['ShortText'].toString(),style:  GoogleFonts.quicksand(fontSize: 14,color: Colors.white,fontWeight: FontWeight.bold),),
+
+                                                                ],),
+                                                                Column(children: [
+                                                                  Container(
+                                                                    width: 120,height: 30,
+                                                                    decoration:   BoxDecoration(color: AllTickets[i]['Status']=="C"?Colors.green.withOpacity(0.2):AllTickets[i]['Status']=="O"?Colors.black.withOpacity(0.2):Colors.black12,borderRadius: const BorderRadiusDirectional.all(Radius.circular(8))),
+                                                                    child:  Center(child: Text(AllTickets[i]['Status']=="O"?"Open":AllTickets[i]['Status']=="C"?"Closed":"",style:  GoogleFonts.poppins(fontSize: 15,color: AllTickets[i]['Status']=="C"?Colors.lightGreenAccent: AllTickets[i]['Status']=="O"?Colors.yellow:Colors.white,fontWeight: FontWeight.bold),)),
+                                                                  )
+                                                                ],)
+                                                              ],
+
+                                                            ),
+                                                          )
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            Container(height: 200,),
+                                          ],
+                                        ),
+
+                                      ),
+                                    ),
+                                  )
+                              ),
+                              onTap: () {
+                              },
+                            )
+                            else
+                          Center(child: Text("No Record Found!!!",style:  GoogleFonts.poppins(fontSize: 20,color: Colors.white,fontWeight: FontWeight.bold),)),
+
+
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
         ),
-      ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(38.0),
-                  ),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(0.4),
-                        offset: const Offset(0, 2),
-                        blurRadius: 8.0),
-                  ],
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(32.0),
-                    ),
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(CupertinoIcons.search,
-                          size: 20,
-                          color: Colors.black),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
           ),
     );
   }
+
+  onFilterChanged(text) async {
+
+    setState(() {
+      searchFilterResult.clear();
+      AllTickets.clear();
+    });
+    {
+
+      print("ticket_data_api_list $ticket_data_api_list");
+      ticket_data_api_list.forEach((Detail) {
+
+        if (text=="All") { // Corrected from 'Detail['0']' to 'Detail['Status']'
+          print("sdjhfjs $Detail");
+          searchFilterResult.add(Detail);
+          print("searchFilterResult$searchFilterResult");
+        }
+        if (Detail['Status'] == "O"&&text=="Open"&&text!=null) { // Corrected from 'Detail['0']' to 'Detail['Status']'
+          print("sdjhfjs $Detail");
+          searchFilterResult.add(Detail);
+          print("searchFilterResult$searchFilterResult");
+        }
+        if (Detail['Status'] == "C"&&text=="Closed"&&text!=null) { // Corrected from 'Detail['0']' to 'Detail['Status']'
+          print("sdjhfjs $Detail");
+          searchFilterResult.add(Detail);
+          print("searchFilterResult$searchFilterResult");
+        }
+        if (Detail['Status'] == "P"&&text=="Pending"&&text!=null) { // Corrected from 'Detail['0']' to 'Detail['Status']'
+
+          searchFilterResult.add(Detail);
+
+        }
+      });
+
+      setState(() {
+        ticket_data_filtered.clear();
+        searchFilterResult.forEach((searchData) {
+          AllTickets.add(searchData);
+        });
+      });
+
+    }
+  }
+
 }

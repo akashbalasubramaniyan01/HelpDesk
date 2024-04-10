@@ -15,7 +15,7 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:http_auth/http_auth.dart';
 
 import '../model/LoginModel.dart';
-
+import 'dart:io';
 
 
 class SignInFive extends StatefulWidget {
@@ -28,76 +28,82 @@ class SignInFive extends StatefulWidget {
 class _SignInFiveState extends State<SignInFive> {
 
  List <LoginModel>LoginModels=[];
+
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
-  LogiApiCall(Email,Password) async {
-    try{
-      DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
-      var url = "${GlobalConfiguration().get("ApiURl")}apilogin";
-      print(url);
-      http.Response response = await client.post(
-          Uri.parse(url),
-          headers:   {
-            'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
-            'Content-Type': 'application/json',
-            'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
-          },
+ LogiApiCall(Email, Password) async {
+   Navigator.pushReplacement(
+       context, CupertinoPageRoute(builder: (_) => MainPage()));
 
-          body: json.encode({
-            "userid": Email,
-            "password": Password,
-            "count": 0
-            /*   "userid": "muralimanoharan@ri-square.com",
+
+   try {
+     DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
+     var url = "${GlobalConfiguration().get("ApiURl")}apilogin";
+     print(url);
+     http.Response response = await client.post(
+         Uri.parse(url),
+         headers: {
+           'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+           'Content-Type': 'application/json',
+           'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
+         },
+         body: json.encode({
+           "userid": Email,
+           "password": Password,
+           "count": 0
+         })
+     );
+     /*   "userid": "muralimanoharan@ri-square.com",
       "password": "Test@123",
       "count": 0*/
-          })
-      );
+     print(response.statusCode);
 
-      if (response.statusCode == 200) {
-        setState(() {
-          print( response.body);
-          var jsonResponse = json.decode(response.body);
+     if (response.statusCode == 200) {
+       setState(() {
+         print(response.body);
+         var jsonResponse = json.decode(response.body);
 
-          LoginModels = [jsonResponse]
-              .map((taskJson) => LoginModel.fromJson(taskJson))
-              .toList();
-          Navigator.pushReplacement(
-              context, CupertinoPageRoute(builder: (_) =>  MainPage(LoginModels)));
+         LoginModels = [jsonResponse]
+             .map((taskJson) => LoginModel.fromJson(taskJson))
+             .toList();
+         Navigator.pushReplacement(
+             context, CupertinoPageRoute(builder: (_) => MainPage()));
 
-        }); }
-      else {
-        final materialBanner = MaterialBanner(
-          /// need to set following properties for best effect of awesome_snackbar_content
-          elevation: 2,
-          backgroundColor: Colors.transparent,
-          forceActionsBelow: false,
-          content: AwesomeSnackbarContent(
-            title: 'Failure',
-            message:
-            'Username And Password invalid!!!',
+       });
+     } else if (response.statusCode == 302) {
+       // Handle redirection
+       var redirectUrl = response.headers['location'];
+       print(redirectUrl);
+       // You can choose to follow the redirect here by making another request to the new URL
+       // For example:
+       // http.Response redirectedResponse = await client.get(Uri.parse(redirectUrl));
+       // Handle the redirected response as needed
+     } else {
+       // Handle other error cases
+       final materialBanner = MaterialBanner(
+         elevation: 2,
+         backgroundColor: Colors.transparent,
+         forceActionsBelow: false,
+         content: AwesomeSnackbarContent(
+           title: 'Failure',
+           message: 'Username and Password invalid!!!',
+           contentType: ContentType.failure,
+           inMaterialBanner: true,
+         ),
+         actions: const [SizedBox.shrink()],
+       );
 
-            /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
-            contentType: ContentType.failure,
-            // to configure for material banner
-            inMaterialBanner: true,
-          ),
-          actions: const [SizedBox.shrink()],
-        );
+       ScaffoldMessenger.of(context)
+         ..hideCurrentMaterialBanner()
+         ..showMaterialBanner(materialBanner);
+     }
 
-        ScaffoldMessenger.of(context)
-          ..hideCurrentMaterialBanner()
-          ..showMaterialBanner(materialBanner);
-      }
+   } catch (e) {
+     print(e);
+   }
+ }
 
-    }
-    catch (e)
-    {
-      print(e);
-    }
-
-
-  }
-  @override
+ @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
