@@ -35,9 +35,6 @@ class _SignInFiveState extends State<SignInFive> {
  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
  LogiApiCall(Email, Password) async {
 
-   Navigator.pushReplacement(
-       context, CupertinoPageRoute(builder: (_) => MainPage()));
-
 
    try {
      DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
@@ -70,7 +67,7 @@ class _SignInFiveState extends State<SignInFive> {
              .map((taskJson) => LoginModel.fromJson(taskJson))
              .toList();
          Navigator.pushReplacement(
-             context, CupertinoPageRoute(builder: (_) => MainPage()));
+             context, CupertinoPageRoute(builder: (_) => MainPage(0)));
 
        });
      } else if (response.statusCode == 302) {

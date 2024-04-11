@@ -604,6 +604,7 @@ class _TicketPageState extends State<TicketPage> {
   int OpenCount = 0;
   int PendingCount = 0;
   int ClosedCount = 0;
+  int TotalTickesCount = 0;
   List searchResult = [];
   void RaedAllTickets() async {
     var client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
@@ -632,10 +633,10 @@ print(response.statusCode);
 
        print("ticket_data_filtered---------$ticket_data_filtered");
 
-       AllTickets.length;
+       TotalTickesCount = AllTickets.length;
        OpenCount =  ticket_data_api_list.where((element) => element['Status']=="O").length;
        ClosedCount =  ticket_data_api_list.where((element) => element['Status']=="C").length;
-       PendingCount =  ticket_data_api_list.where((element) => element['Status']=="P").length;
+       PendingCount =  ticket_data_api_list.where((element) => element['Status']=="R").length;
 
        print(AllTickets);
      });
@@ -654,7 +655,7 @@ print(response.statusCode);
     final size = MediaQuery.of(context).size;
     return   Scaffold(
       backgroundColor: MyColors.AppthemeColor,
-      bottomSheet: Container(
+     /* bottomSheet: Container(
         width: size.width/1,
         height: 80,
         decoration: BoxDecoration(
@@ -695,7 +696,7 @@ print(response.statusCode);
               )
           ),
         ),
-      ),
+      ),*/
       //floatingActionButton: FloatingActionButton(onPressed: () {  },child: const Icon(CupertinoIcons.create_solid,color: MyColors.AppthemeColor,),),
       body:    Container(
             margin: const EdgeInsets.only(top: 0),
@@ -767,7 +768,7 @@ print(response.statusCode);
                           Radius.circular(32.0),
                         ),
                         onTap: () {
-                          RaedAllTickets();
+
                           onSearchTextChanged( SearchText.text);
                           FocusScope.of(context).requestFocus(FocusNode());
                         },
@@ -821,7 +822,7 @@ print(response.statusCode);
                         tabs:  [
 
                           Tab(
-                            text: "      All  ${AllTickets.length}    ",
+                            text: "      All  ${TotalTickesCount}    ",
 
                           ),
                           Tab(
@@ -829,7 +830,7 @@ print(response.statusCode);
                             text: "    Open   ${OpenCount}  ",
                           ),
                           Tab(
-                            text: " Pending $PendingCount ",
+                            text: " Resolved $PendingCount ",
                           ),
                           Tab(
                             text: " Closed $ClosedCount ",
@@ -858,7 +859,7 @@ print(response.statusCode);
                                             for(int i=0;i<AllTickets.length;i++)
                                               InkWell(
                                                 onTap: () {
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => TicketDeatils(AllTickets,i),));
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => TicketDeatils(AllTickets,i,onBack: RaedAllTickets),));
 
                                                 },
                                                 child: SingleChildScrollView(
@@ -881,8 +882,8 @@ print(response.statusCode);
                                                                 Column(children: [
                                                                   Container(
                                                                     width: 120,height: 30,
-                                                                    decoration:   BoxDecoration(color: AllTickets[i]['Status']=="C"?Colors.green.withOpacity(0.2):AllTickets[i]['Status']=="O"?Colors.black.withOpacity(0.2):Colors.black12,borderRadius: const BorderRadiusDirectional.all(Radius.circular(8))),
-                                                                    child:  Center(child: Text(AllTickets[i]['Status']=="O"?"Open":AllTickets[i]['Status']=="C"?"Closed":"",style:  GoogleFonts.poppins(fontSize: 15,color: AllTickets[i]['Status']=="C"?Colors.lightGreenAccent: AllTickets[i]['Status']=="O"?Colors.yellow:Colors.white,fontWeight: FontWeight.bold),)),
+                                                                    decoration:   BoxDecoration(color: AllTickets[i]['Status']=="C"?Colors.green.withOpacity(0.2):AllTickets[i]['Status']=="O"?Colors.black.withOpacity(0.2):Colors.white,borderRadius: const BorderRadiusDirectional.all(Radius.circular(8))),
+                                                                    child:  Center(child: Text(AllTickets[i]['Status']=="O"?"Open":AllTickets[i]['Status']=="C"?"Closed":"Resolved",style:  GoogleFonts.poppins(fontSize: 15,color: AllTickets[i]['Status']=="C"?Colors.lightGreenAccent: AllTickets[i]['Status']=="O"?Colors.yellow:Colors.blue,fontWeight: FontWeight.bold),)),
                                                                   )
                                                                 ],)
                                                               ],
@@ -977,7 +978,7 @@ print(response.statusCode);
           searchFilterResult.add(Detail);
           print("searchFilterResult$searchFilterResult");
         }
-        if (Detail['Status'] == "P"&&text=="Pending"&&text!=null) { // Corrected from 'Detail['0']' to 'Detail['Status']'
+        if (Detail['Status'] == "R"&&text=="Pending"&&text!=null) { // Corrected from 'Detail['0']' to 'Detail['Status']'
 
           searchFilterResult.add(Detail);
 

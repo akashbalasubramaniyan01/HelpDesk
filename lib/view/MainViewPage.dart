@@ -10,12 +10,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:helpdesk/view/login.dart';
 import 'package:helpdesk/view/signin.dart';
 import '../model/LoginModel.dart';
+import 'CreateTicket.dart';
 import 'TicketList.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:hexcolor/hexcolor.dart';
+
 class MainPage extends StatefulWidget {
+  int screenValue;
    /*List <LoginModel> LoginModels;*/
-   MainPage(/*this.LoginModels*/);
+   MainPage(/*this.LoginModels*/this.screenValue);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -52,7 +56,7 @@ void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       final CurvedNavigationBarState? navBarState =
           _bottomNavigationKey.currentState;
-      navBarState?.setPage(0); // Navigating to the second page
+      navBarState?.setPage(widget.screenValue); // Navigating to the second page
     });
     // TODO: implement initState
     super.initState();
@@ -316,20 +320,18 @@ void initState() {
           Container(
 
               width: size.width/1,
-              height: size.height/1.2,
+              height: size.height/1,
               child: TicketPage(TotalTicketCount))
           else if(_page==1)
-          /*  Container(
-              alignment: Alignment.center,
-              margin: EdgeInsets.only(top: 185),
-              child: Center(
-                child: Text("Create Ticket Page\n    Cooming Soon"
-                    ,style:GoogleFonts.quicksand( fontSize: 20.0,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,),),
-              ),
-            )*/
-            /*Container(
+        Container(
+          color: HexColor('FFFCFB'),
+
+        width: size.width/1,
+        height: size.height/1.2,
+        child: CreateTicket())
+
+
+         /*   Container(
               width: 400,
               margin: EdgeInsets.all(8),
               decoration: BoxDecoration(color: Colors.white,borderRadius:  BorderRadius.circular(20)),
@@ -345,165 +347,83 @@ void initState() {
 
               ),
             )*/
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: ExpansionTileCard(
 
-                leading: const CircleAvatar(
-                     backgroundColor: Colors.green,
-                    child: Icon(Icons.check,color: Colors.white,)),
-                title: Text('Closed', style: GoogleFonts.poppins(color: Colors.black,fontWeight: FontWeight.bold, )),
-
-                children: <Widget>[
-                  Divider(
-                    thickness: 1.0,
-                    height: 1.0,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 8.0,
-                        ),
-                        child:  Column(
-                          children: [
-
-                            Row(
-                              children: <Widget>[
-                                Radio(
-                                  value: 'Open',
-                                  groupValue: _radioValue,
-                                  onChanged: radioButtonChanges,
-                                ),
-                                Text(
-                                  "Open",
-                                    style: GoogleFonts.poppins(color: Colors.black,fontWeight: FontWeight.w600, )
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Radio(
-                                  value: 'Closed',
-                                  groupValue: _radioValue,
-                                  onChanged: radioButtonChanges,
-                                ),
-                                Text(
-                                  "Closed",
-                                    style: GoogleFonts.poppins(color: Colors.black,fontWeight: FontWeight.w600, )
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Radio(
-                                  value: 'Resolved',
-                                  groupValue: _radioValue,
-                                  onChanged: radioButtonChanges,
-                                ),
-                                Text(
-                                  "Resolved",
-                                    style: GoogleFonts.poppins(color: Colors.black,fontWeight: FontWeight.w600, )
-                                ),
-                              ],
-                            ),
-                            Container(height: 10,),
-                            Container(
-                              alignment: Alignment.center,
-                              height: size.height / 12,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color:  Colors.white,
-                                boxShadow: [ BoxShadow(color: Colors.black12,blurRadius: 2)]
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    //mail icon
-                                    const Icon(
-                                      Icons.person,
-                                      color: Colors.black,
-                                    ),
-                                    const SizedBox(
-                                      width: 16,
-                                    ),
-
-                                    //divider svg
-                                    SvgPicture.string(
-                                      '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
-                                      width: 1.0,
-                                      height: 15.5,
-                                      color: Colors.black,
-                                    ),
-                                    const SizedBox(
-                                      width: 16,
-                                    ),
-
-                                    //email address textField
-                                    Expanded(
-                                      child: TextField(
-
-                                        maxLines: 1,
-                                        cursorColor: Colors.white70,
-                                        keyboardType: TextInputType.emailAddress,
-                                        style: TextStyle(   fontSize: 14.0,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w500,),
-                                        decoration: InputDecoration(
-                                            hintText: 'Enter your Name',
-
-                                            hintStyle:TextStyle( fontSize: 14.0,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w500,),
-                                            border: InputBorder.none),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(height: 20,),
-                            Container(
-                              alignment: Alignment.center,
-                              height: size.height / 13,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: const Color(0xFFF56B3F),
-                              ),
-                              child: InkWell(
-                                onTap: () {
-
-
-                                  /* Navigator.pushReplacement(
-    context, CupertinoPageRoute(builder: (_) =>  MainPage()));*/
-
-                                },
-                                child: Text(
-                                    'Submit',
-                                    style: GoogleFonts.poppins(color: Colors.white,fontWeight: FontWeight.bold, fontSize:20)
-                                ),
-                              ),
-                            )
-
-                          ],
-                        ),
-                    ),
-                  ),
-                ],
-              ),
-            )
           else if(_page==2)
-              Container(
-                alignment: Alignment.center,
-                margin: EdgeInsets.only(top: 185),
-                child: Center(
-                  child: Text("     Profile Page\n    Cooming Soon"
-                    ,style:GoogleFonts.quicksand( fontSize: 20.0,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,),),
+              Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 15, bottom: 8),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(38.0),
+                            ),
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 8.0),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 16, right: 16, top: 4, bottom: 4),
+                            child: TextField(
+                              onChanged: (String txt) {},
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ),
+
+                              cursorColor: MyColors.AppthemeColor,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Search Ticket Details',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(38.0),
+                        ),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                              color: Colors.grey.withOpacity(0.4),
+                              offset: const Offset(0, 2),
+                              blurRadius: 8.0),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(32.0),
+                          ),
+                          onTap: () {
+
+
+                            FocusScope.of(context).requestFocus(FocusNode());
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Icon(CupertinoIcons.search,
+                                size: 20,
+                                color: Colors.black),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
