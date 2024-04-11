@@ -8,20 +8,11 @@ import 'package:flutter/widgets.dart';
 import 'package:helpdesk/utils/colors.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:helpdesk/utils/colors.dart';
-import 'package:helpdesk/view/MainViewPage.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'dart:convert' as convert;
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:helpdesk/view/login.dart';
-
-import 'package:http/http.dart' as http;
 import 'package:global_configuration/global_configuration.dart';
 import 'package:http_auth/http_auth.dart';
 import 'package:intl/intl.dart';
-import '../model/LoginModel.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'TicketDetails.dart';
 class TicketPage extends StatefulWidget {
   Function TotalTicketCount;
@@ -36,7 +27,9 @@ class _TicketPageState extends State<TicketPage> {
   TextEditingController Description = TextEditingController();
   TextEditingController issuecode = TextEditingController();
   TextEditingController issuedetails = TextEditingController();
+  TextEditingController SearchText = TextEditingController();
   String IssueAllert = "";
+  bool CreateTicketbool = false;
   String DescAllert = "";
   String UserNameAllert = "";
   String CodeAllert = "";
@@ -85,9 +78,11 @@ class _TicketPageState extends State<TicketPage> {
       }));
       if (response.statusCode == 200) {
         setState(() {
-
+          CreateTicketbool = false;
           var jsonResponse = json.decode(response.body);
           print(jsonResponse);
+          RaedAllTickets();
+          Navigator.of(context).pop();
 
         }); }
       else {
@@ -126,6 +121,7 @@ class _TicketPageState extends State<TicketPage> {
      CodeAllert = "";
      dateInput.text = ""; //set the initial value of text field
     showModalBottomSheet(
+
       context: context,
       isScrollControlled: true,
       elevation: 10,
@@ -561,6 +557,9 @@ class _TicketPageState extends State<TicketPage> {
                                     });
                                   }
                                   else{
+                                    setState(() {
+                                      CreateTicketbool = true;
+                                    });
                                     CreateTicket(username.text,Description.text,issuecode.text,issuedetails.text,dropdownvalue,pvalue,dateInput.text);
                                   }
 
@@ -568,8 +567,12 @@ class _TicketPageState extends State<TicketPage> {
                                     context, CupertinoPageRoute(builder: (_) =>  MainPage()));*/
 
                                 },
-                                child: Text(
-                                    'Sign in',
+                                child: CreateTicketbool? Center(child: SpinKitRotatingCircle(
+                                  color: Colors.white,
+                                  size: 50.0,
+                                )
+                                ) :Text(
+                                    'Create Ticket',
                                     style: TextStyle( fontSize: 16.0,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600,)
@@ -601,16 +604,17 @@ class _TicketPageState extends State<TicketPage> {
   int OpenCount = 0;
   int PendingCount = 0;
   int ClosedCount = 0;
-
+  List searchResult = [];
   void RaedAllTickets() async {
     var client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
 
-    var response = await client.get(Uri.parse('https://elteesolutions.com/helpdesk/apinewticket'),headers: {'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+    var response = await client.get(Uri.parse('https://elteesolutions.com/helpdesk/apinewticket'),headers: {
+      'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
       'Content-Type': 'application/json',
       'Cookie': 'ci_session=3gnid18nsvll4u99839vfroba1ihd58t; csrfcookiei2help=4912ec8965916cc488eeb6aa70918fa7'
     });
 
-
+print(response.statusCode);
     if (response.statusCode == 200) {
      setState(() {
        AllTickets.clear();
@@ -618,8 +622,15 @@ class _TicketPageState extends State<TicketPage> {
        var jsonResponse = json.decode(response.body);
        var JsonData = jsonResponse['data'];
        AllTickets.addAll(JsonData);
-       ticket_data_api_list.addAll(AllTickets);
-       print(ticket_data_api_list);
+       AllTickets.forEach((element) {
+         ticket_data_filtered.add(element);
+         ticket_data_api_list.add(element);
+       });
+
+
+       //ticket_data_api_list.addAll(AllTickets);
+
+       print("ticket_data_filtered---------$ticket_data_filtered");
 
        AllTickets.length;
        OpenCount =  ticket_data_api_list.where((element) => element['Status']=="O").length;
@@ -638,13 +649,14 @@ class _TicketPageState extends State<TicketPage> {
     // TODO: implement initState
     RaedAllTickets();
   }
+
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return   Scaffold(
       backgroundColor: MyColors.AppthemeColor,
       bottomSheet: Container(
         width: size.width/1,
-        height: 60,
+        height: 80,
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -655,7 +667,7 @@ class _TicketPageState extends State<TicketPage> {
         ), //BoxShadow
       ]),
         child: Padding(
-          padding: const EdgeInsets.only(top: 10,bottom: 10,right: 25,left: 25),
+          padding: const EdgeInsets.only(top: 10,bottom: 25,right: 25,left: 25),
           child: SizedBox(
               height:50,width: size.width/1,
               child:ElevatedButton(
@@ -695,11 +707,11 @@ class _TicketPageState extends State<TicketPage> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 15, bottom: 8),
               child: Row(
                 children: <Widget>[
                   Expanded(
-flex: 1,
+                   flex: 1,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
                       child: Container(
@@ -723,6 +735,7 @@ flex: 1,
                             style: const TextStyle(
                               fontSize: 18,
                             ),
+                            controller: SearchText,
                             cursorColor: MyColors.AppthemeColor,
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -755,6 +768,7 @@ flex: 1,
                         ),
                         onTap: () {
                           RaedAllTickets();
+                          onSearchTextChanged( SearchText.text);
                           FocusScope.of(context).requestFocus(FocusNode());
                         },
                         child: Padding(
@@ -908,7 +922,36 @@ flex: 1,
           ),
     );
   }
+  onSearchTextChanged(String text) async {
 
+    AllTickets.clear();
+    searchResult.clear();
+    setState(() {
+      if (text.isEmpty) {
+        setState(() {
+          AllTickets.clear();
+          ticket_data_filtered.forEach((element) {
+            AllTickets.add(element);
+          });
+        });
+        return;
+      }
+
+
+      ticket_data_filtered.forEach((Detail) {
+        if (Detail['TicketNo'].toString().toLowerCase().contains(text.toLowerCase()) )
+          searchResult.add(Detail);
+        print("searchResult$searchResult");
+
+      });
+    });
+
+    setState(() {
+      searchResult.forEach((searchData) {
+        AllTickets.add(searchData);
+      });
+    });
+  }
   onFilterChanged(text) async {
 
     setState(() {
@@ -916,7 +959,6 @@ flex: 1,
       AllTickets.clear();
     });
     {
-
       print("ticket_data_api_list $ticket_data_api_list");
       ticket_data_api_list.forEach((Detail) {
 

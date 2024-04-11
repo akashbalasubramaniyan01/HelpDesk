@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:helpdesk/utils/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 class TicketDeatils extends StatefulWidget {
 
   var AllTickets;
@@ -15,6 +16,7 @@ class TicketDeatils extends StatefulWidget {
 }
 
 class _TicketDeatilsState extends State<TicketDeatils> {
+
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -22,6 +24,8 @@ class _TicketDeatilsState extends State<TicketDeatils> {
         backgroundColor: const Color(0xFF21899C),
         //elevation: 1,
         leading: InkWell(onTap: () {
+
+
           Navigator.of(context).pop();
         },child: Icon(Icons.arrow_back_ios,color: Colors.white)),
 

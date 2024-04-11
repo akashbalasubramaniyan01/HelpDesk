@@ -9,7 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert' as convert;
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:helpdesk/view/login.dart';
-
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:global_configuration/global_configuration.dart';
 import 'package:http_auth/http_auth.dart';
@@ -31,7 +31,10 @@ class _SignInFiveState extends State<SignInFive> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
+
+ GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
  LogiApiCall(Email, Password) async {
+
    Navigator.pushReplacement(
        context, CupertinoPageRoute(builder: (_) => MainPage()));
 
@@ -53,9 +56,9 @@ class _SignInFiveState extends State<SignInFive> {
            "count": 0
          })
      );
-     /*   "userid": "muralimanoharan@ri-square.com",
-      "password": "Test@123",
-      "count": 0*/
+     /*     muralimanoharan@ri-square.com
+                      Test@123                                  */
+
      print(response.statusCode);
 
      if (response.statusCode == 200) {
