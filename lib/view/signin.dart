@@ -9,13 +9,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert' as convert;
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:helpdesk/view/login.dart';
-
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:global_configuration/global_configuration.dart';
 import 'package:http_auth/http_auth.dart';
 
 import '../model/LoginModel.dart';
-
+import 'dart:io';
 
 
 class SignInFive extends StatefulWidget {
@@ -31,74 +31,79 @@ class _SignInFiveState extends State<SignInFive> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
-  LogiApiCall(Email,Password) async {
-    try{
-      DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
-      var url = "${GlobalConfiguration().get("ApiURl")}apilogin";
-      print(url);
-      http.Response response = await client.post(
-          Uri.parse(url),
-          headers:   {
-            'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
-            'Content-Type': 'application/json',
-            'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
-          },
 
-          body: json.encode({
-            "userid": Email,
-            "password": Password,
-            "count": 0
-            /*   "userid": "muralimanoharan@ri-square.com",
-      "password": "Test@123",
-      "count": 0*/
-          })
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          print( response.body);
-          var jsonResponse = json.decode(response.body);
-
-          LoginModels = [jsonResponse]
-              .map((taskJson) => LoginModel.fromJson(taskJson))
-              .toList();
-          Navigator.pushReplacement(
-              context, CupertinoPageRoute(builder: (_) =>  MainPage(LoginModels)));
-
-        }); }
-      else {
-        final materialBanner = MaterialBanner(
-          /// need to set following properties for best effect of awesome_snackbar_content
-          elevation: 2,
-          backgroundColor: Colors.transparent,
-          forceActionsBelow: false,
-          content: AwesomeSnackbarContent(
-            title: 'Failure',
-            message:
-            'Username And Password invalid!!!',
-
-            /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
-            contentType: ContentType.failure,
-            // to configure for material banner
-            inMaterialBanner: true,
-          ),
-          actions: const [SizedBox.shrink()],
-        );
-
-        ScaffoldMessenger.of(context)
-          ..hideCurrentMaterialBanner()
-          ..showMaterialBanner(materialBanner);
-      }
-
-    }
-    catch (e)
-    {
-      print(e);
-    }
+ GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+ LogiApiCall(Email, Password) async {
 
 
-  }
-  @override
+   try {
+     DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
+     var url = "${GlobalConfiguration().get("ApiURl")}apilogin";
+     print(url);
+     http.Response response = await client.post(
+         Uri.parse(url),
+         headers: {
+             'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+           'Content-Type': 'application/json',
+           'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
+         },
+         body: json.encode({
+           "userid": Email,
+           "password": Password,
+           "count": 0
+         })
+     );
+     /*     muralimanoharan@ri-square.com
+                      Test@123                                  */
+
+     print(response.statusCode);
+
+     if (response.statusCode == 200) {
+       setState(() {
+         print(response.body);
+         var jsonResponse = json.decode(response.body);
+
+         LoginModels = [jsonResponse]
+             .map((taskJson) => LoginModel.fromJson(taskJson))
+             .toList();
+         Navigator.pushReplacement(
+             context, CupertinoPageRoute(builder: (_) => MainPage(0)));
+
+       });
+     } else if (response.statusCode == 302) {
+       // Handle redirection
+       var redirectUrl = response.headers['location'];
+       print(redirectUrl);
+       // You can choose to follow the redirect here by making another request to the new URL
+       // For example:
+       // http.Response redirectedResponse = await client.get(Uri.parse(redirectUrl));
+       // Handle the redirected response as needed
+     } else {
+       // Handle other error cases
+       final materialBanner = MaterialBanner(
+         elevation: 2,
+         backgroundColor: Colors.transparent,
+         forceActionsBelow: false,
+         content: AwesomeSnackbarContent(
+           title: 'Failure',
+           message: 'Username and Password invalid!!!',
+           contentType: ContentType.failure,
+           inMaterialBanner: true,
+         ),
+         actions: const [SizedBox.shrink()],
+       );
+
+       ScaffoldMessenger.of(context)
+         ..hideCurrentMaterialBanner()
+         ..showMaterialBanner(materialBanner);
+     }
+
+   } catch (e) {
+     print(e);
+   }
+ }
+
+ @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(

@@ -7,12 +7,19 @@ import 'package:bottom_animation/bottom_animation.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:helpdesk/utils/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:helpdesk/view/login.dart';
+import 'package:helpdesk/view/signin.dart';
 import '../model/LoginModel.dart';
+import 'CreateTicket.dart';
 import 'TicketList.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:hexcolor/hexcolor.dart';
+
 class MainPage extends StatefulWidget {
-   List <LoginModel> LoginModels;
-   MainPage(this.LoginModels);
+  int screenValue;
+   /*List <LoginModel> LoginModels;*/
+   MainPage(/*this.LoginModels*/this.screenValue);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -20,9 +27,12 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _page = 0;
+
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+
   var items = <BottomNavItem>[
     BottomNavItem(
+
         title: 'Home',
         widget: SvgPicture.asset(
         "assets/movie-ticket-icon.svg",
@@ -38,12 +48,40 @@ class _MainPageState extends State<MainPage> {
         widget: Image.asset('assets/how-to-icon.svg', width: 24,
           height: 24,)),
   ];
-  var cIndex;
+
+  int ToatalCount =0;
   @override
 void initState() {
-    cIndex = 0;
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      final CurvedNavigationBarState? navBarState =
+          _bottomNavigationKey.currentState;
+      navBarState?.setPage(widget.screenValue); // Navigating to the second page
+    });
     // TODO: implement initState
     super.initState();
+  }
+
+  late String _radioValue ="Open"; //Initial definition of radio button value
+  late String choice;
+   radioButtonChanges(String? value) {
+    setState(() {
+      _radioValue = value!;
+      switch (value) {
+        case 'Open':
+          choice = value!;
+          break;
+        case 'Closed':
+          choice = value!;
+          break;
+        case 'Resolved':
+          choice = value!;
+          break;
+        default:
+          choice = "";
+      }
+      debugPrint(choice); //Debug the choice in console
+    });
   }
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -53,14 +91,137 @@ void initState() {
         //elevation: 1,
         leading: Icon(Icons.sort,color: Colors.white),
         actions: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-                borderRadius: BorderRadius.circular(50)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(Icons.people,color: Colors.black),
-              )),
+          InkWell(
+            onTap: () {
+
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32.0))),
+                      contentPadding: EdgeInsets.all(0),
+                      elevation: 0,
+                      scrollable: true,
+                      backgroundColor: Colors.white,
+                      content: Padding(
+                          padding: const EdgeInsets.all(0),
+                          child: Column(
+
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(32),topLeft: Radius.circular(32)), color: Colors.cyan,),
+
+                                width: 500,height: 180,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Center(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all( color: Colors.white,width: 2),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(Icons.person,color: Colors.white,size: 65,),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 15,bottom: 15),
+                                child: Center(
+                                  child: Text('Are you sure you want to logout',style: GoogleFonts.poppins(
+
+                                    color:
+                                    Colors.black,
+                                    fontSize:
+                                    14,
+                                    fontWeight: FontWeight.bold,
+                                  ),),
+                                ),
+                              ),
+
+                            ],
+                          )
+                      ),
+                      actions: [
+
+                       Row(
+                         mainAxisAlignment: MainAxisAlignment.center,
+                         children: [
+                         Container(
+                           width:80,
+                           margin: EdgeInsets.all(15),
+                           child: ElevatedButton(
+                             onPressed: () {
+                               Navigator.of(context).pop(false);
+                             },
+                             child: Text('No',style: TextStyle(
+                               color:
+                               Colors.white,
+                               fontSize:
+                               14,
+                               fontFamily:
+                               'Proxima_Nova_Font',
+                               fontWeight: FontWeight.bold,
+                             ),),
+                             style:ButtonStyle(
+                               foregroundColor: MaterialStateProperty.all<Color>(Color(0xFFF56B3F)),
+                               backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFF56B3F)),
+                               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                 RoundedRectangleBorder(
+                                   borderRadius: BorderRadius.all(Radius.circular(8)),
+                                 ),
+                               ),
+                             ),
+                           ),
+                         ),
+                         Container(
+
+                           alignment: Alignment.center,
+                             width:80,
+                             margin: EdgeInsets.all(15),
+                             child:   ElevatedButton(
+                               child: Text(
+                                 "Yes",
+                                 style: TextStyle(
+                                   color: Colors.black,
+                                   fontSize: 14,
+                                   fontFamily: 'Proxima_Nova_Font',
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                               style: ButtonStyle(
+                                 foregroundColor: MaterialStateProperty.all<Color>(Colors.grey),
+                                 backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
+                                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                   RoundedRectangleBorder(
+                                     borderRadius: BorderRadius.all(Radius.circular(8)),
+                                   ),
+                                 ),
+                               ),
+                               onPressed: ()  {
+
+
+                                 Navigator.of(context).pushReplacement(
+                                   MaterialPageRoute(builder: (context) => SignInFive()),
+                                 );
+                               },
+                             )
+                         ),
+                       ],)
+                      ],
+                    );
+                  });
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                  borderRadius: BorderRadius.circular(50)),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(Icons.logout,color: Colors.black),
+                )),
+          ),
           Container(width: 10,)
         ],
         title:  Text.rich(
@@ -89,6 +250,7 @@ void initState() {
       backgroundColor: const Color(0xFF21899C),
       bottomNavigationBar:  CurvedNavigationBar(
     key: _bottomNavigationKey,
+
     backgroundColor: Colors.white,
     buttonBackgroundColor: Color(0xFF21899C),
     color: Color(0xFF21899C),
@@ -129,6 +291,7 @@ void initState() {
     body: SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+
         children: [
           /* Padding(
               padding: const EdgeInsets.only(left: 15,top: 10),
@@ -153,13 +316,127 @@ void initState() {
                 ),
               ),
             ),*/
+          if(_page==0)
           Container(
-              height: size.height/1.3,
-              width: size.width/1,child: TicketPage())
+
+              width: size.width/1,
+              height: size.height,
+              child: TicketPage(TotalTicketCount))
+          else if(_page==1)
+        Container(
+          color: HexColor('FFFCFB'),
+
+        width: size.width/1,
+        height: size.height/1.3,
+        child: CreateTicket())
+
+
+         /*   Container(
+              width: 400,
+              margin: EdgeInsets.all(8),
+              decoration: BoxDecoration(color: Colors.white,borderRadius:  BorderRadius.circular(20)),
+              child: ExpansionTile(
+
+                title: Text('Select Status',style: GoogleFonts.poppins(fontWeight: FontWeight.w700),),
+
+                children: [
+                  ListTile(
+                    title: Text('This is tile number '),
+                  ),
+                ],
+
+              ),
+            )*/
+
+          else if(_page==2)
+              Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 15, bottom: 8),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(38.0),
+                            ),
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 8.0),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 16, right: 16, top: 4, bottom: 4),
+                            child: TextField(
+                              onChanged: (String txt) {},
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ),
+
+                              cursorColor: MyColors.AppthemeColor,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Search Ticket Details',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(38.0),
+                        ),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                              color: Colors.grey.withOpacity(0.4),
+                              offset: const Offset(0, 2),
+                              blurRadius: 8.0),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(32.0),
+                          ),
+                          onTap: () {
+
+
+                            FocusScope.of(context).requestFocus(FocusNode());
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Icon(CupertinoIcons.search,
+                                size: 20,
+                                color: Colors.black),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
         ],
       ),
     ),
 
     ));
+  }
+  TotalTicketCount(var TicketData){
+    setState(() {
+
+      ToatalCount = TicketData.length;
+    });
   }
 }
