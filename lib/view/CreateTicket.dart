@@ -13,6 +13,7 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:http_auth/http_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../model/LoginModel.dart';
 import 'MainViewPage.dart';
 import 'TicketDetails.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,7 +22,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../utils/colors.dart';
 import 'package:intl/intl.dart';
 class CreateTicket extends StatefulWidget {
-  const CreateTicket({Key? key}) : super(key: key);
+  final List<LoginModel> loginModels;
+  const CreateTicket(this.loginModels);
 
   @override
   State<CreateTicket> createState() => _CreateTicketState();
@@ -116,12 +118,12 @@ class _CreateTicketState extends State<CreateTicket> {
           ScaffoldMessenger.of(context)
             ..hideCurrentMaterialBanner()
             ..showMaterialBanner(materialBanner);
-
-          Navigator.pushReplacement(
-              context, CupertinoPageRoute(builder: (_) => MainPage(0)));
-          Future.delayed(Duration(seconds: 1), () {
+          Future.delayed(const Duration(seconds: 1), () {
             ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
           });
+          Navigator.pushReplacement(
+              context, CupertinoPageRoute(builder: (_) => MainPage(0, loginModels:widget.loginModels,)));
+
 
 
 

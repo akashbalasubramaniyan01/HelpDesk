@@ -1,5 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -31,11 +32,12 @@ class _SignInFiveState extends State<SignInFive> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
-
+  TextEditingController ressetpassword = TextEditingController();
+ late Timer _timer;
  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
  LogiApiCall(Email, Password) async {
 
-
+   final prefs = await SharedPreferences.getInstance();
    try {
      DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
      var url = "${GlobalConfiguration().get("ApiURl")}apilogin";
@@ -43,7 +45,7 @@ class _SignInFiveState extends State<SignInFive> {
      http.Response response = await client.post(
          Uri.parse(url),
          headers: {
-           'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+             'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
            'Content-Type': 'application/json',
            'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
          },
@@ -59,7 +61,10 @@ class _SignInFiveState extends State<SignInFive> {
      print(response.statusCode);
 
      if (response.statusCode == 200) {
+
        setState(() {
+         prefs.setString('UserName', Email);
+         prefs.setString('PassWord', Password);
          print(response.body);
          var jsonResponse = json.decode(response.body);
 
@@ -67,9 +72,10 @@ class _SignInFiveState extends State<SignInFive> {
              .map((taskJson) => LoginModel.fromJson(taskJson))
              .toList();
          Navigator.pushReplacement(
-             context, CupertinoPageRoute(builder: (_) => MainPage(0)));
+             context, CupertinoPageRoute(builder: (_) => MainPage(0,loginModels:LoginModels)));
 
        });
+
      } else if (response.statusCode == 302) {
        // Handle redirection
        var redirectUrl = response.headers['location'];
@@ -81,7 +87,7 @@ class _SignInFiveState extends State<SignInFive> {
      } else {
        // Handle other error cases
        final materialBanner = MaterialBanner(
-         elevation: 2,
+         elevation: 0,
          backgroundColor: Colors.transparent,
          forceActionsBelow: false,
          content: AwesomeSnackbarContent(
@@ -96,14 +102,26 @@ class _SignInFiveState extends State<SignInFive> {
        ScaffoldMessenger.of(context)
          ..hideCurrentMaterialBanner()
          ..showMaterialBanner(materialBanner);
+
+       Future.delayed(const Duration(seconds: 2), () {
+         setState(() {
+           ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+         });
+       });
+
      }
 
    } catch (e) {
      print(e);
    }
  }
-
+bool _passwordVisible= false;
  @override
+ void initState() {
+   _passwordVisible = false;
+    // TODO: implement initState
+    super.initState();
+  }
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
@@ -169,7 +187,7 @@ class _SignInFiveState extends State<SignInFive> {
                           flex: 1,
                           child: Text(
                               'Continue with email for sign in App',
-                              style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4)
+                              style: GoogleFonts.poppins(fontSize:14,color:Colors.white,fontWeight: FontWeight.w600)
                           ),
                         ),
 
@@ -232,11 +250,12 @@ class _SignInFiveState extends State<SignInFive> {
   }
 
   Widget logo(double height_, double width_) {
-    return SvgPicture.asset(
+    return Image.asset('assets/logo.png',  height: height_,
+      width: width_,)/*SvgPicture.asset(
       'assets/logo2.svg',
       height: height_,
       width: width_,
-    );
+    )*/;
   }
 
   Widget richText(double fontSize) {
@@ -311,7 +330,7 @@ class _SignInFiveState extends State<SignInFive> {
                   color: Colors.white,
                   fontWeight: FontWeight.w500,),
                 decoration: InputDecoration(
-                    hintText: 'Enter your gmail address',
+                    hintText: 'Enter your Email or Phone',
                     hintStyle:TextStyle( fontSize: 14.0,
                       color: Colors.white70,
                       fontWeight: FontWeight.w500,),
@@ -361,9 +380,10 @@ class _SignInFiveState extends State<SignInFive> {
               child: TextField(
                 controller: passController,
                 maxLines: 1,
+                obscureText: !_passwordVisible,//This will obscure text dynamically
                 cursorColor: Colors.white70,
                 keyboardType: TextInputType.visiblePassword,
-                obscureText: true,
+
                 style: TextStyle(  fontSize: 14.0,
                   color: Colors.white,
                   fontWeight: FontWeight.w500,),
@@ -372,9 +392,20 @@ class _SignInFiveState extends State<SignInFive> {
                     hintStyle: TextStyle(    fontSize: 14.0,
                       color: Colors.white70,
                       fontWeight: FontWeight.w500,),
-                    suffixIcon: const Icon(
-                      Icons.visibility,
-                      color: Colors.white70,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        // Based on passwordVisible state choose the icon
+                        _passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,   color: Colors.white,
+
+                      ),
+                      onPressed: () {
+                        // Update the state i.e. toogle the state of passwordVisible variable
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
                     ),
                     border: InputBorder.none),
               ),
@@ -387,7 +418,7 @@ class _SignInFiveState extends State<SignInFive> {
 
   Widget buildRemember(Size size) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
@@ -409,68 +440,88 @@ class _SignInFiveState extends State<SignInFive> {
             height: 4.0,
           ),
         ),
-        const SizedBox(
-          width: 16,
-        ),
+
         Text(
             'Remember me',
             style: TextStyle(   fontSize: 14.0,
               color: Colors.white,
               fontWeight: FontWeight.w600,)
         ),
+        const SizedBox(
+          width: 60,
+        ),
+        InkWell(
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext
+                context) =>_changepassword(context, size)
+            );
+          },
+          child: Text(
+              "Forgot Password",
+              style: TextStyle(   fontSize: 14.0,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,)
+          ),
+        ),
       ],
     );
   }
 
   Widget signInButton(Size size, email, password) {
-    return Container(
-      alignment: Alignment.center,
-      height: size.height / 13,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        color: const Color(0xFFF56B3F),
-      ),
-      child: InkWell(
+    return InkWell(
+
         onTap: () {
-           if(emailController.text==""){
-             showDialog(
-               context: context,
-               builder: (_) {
-                 return  AlertDialog(
-                   elevation: 14,
-                   backgroundColor: MyColors.AppthemeColor,
-                   title: Center(child: Text('Please Enter the Email', style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4))),
+          if(emailController.text==""){
+            showDialog(
+              context: context,
+              builder: (_) {
+                return  AlertDialog(
+                  elevation: 14,
+                  backgroundColor: MyColors.AppthemeColor,
+                  title: Center(child: Text('Please Enter the Email', style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4))),
 
-                 );
-               },
-             );
-           }
-           else if(passController.text==""){
-             showDialog(
-               context: context,
-               builder: (_) {
-                 return  AlertDialog(
-                   elevation: 14,
-                   backgroundColor: MyColors.AppthemeColor,
-                   title: Text('Please Enter the Password',style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4)),
+                );
+              },
+            );
+          }
+          else if(passController.text==""){
+            showDialog(
+              context: context,
+              builder: (_) {
+                return  AlertDialog(
+                  elevation: 14,
+                  backgroundColor: MyColors.AppthemeColor,
+                  title: Text('Please Enter the Password',style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4)),
 
-                 );
-               },
-             );
-           }
-           else{
-             LogiApiCall(email,password);
-           }
+                );
+              },
+            );
+          }
+          else{
+            LogiApiCall(email,password);
+          }
 
           /* Navigator.pushReplacement(
     context, CupertinoPageRoute(builder: (_) =>  MainPage()));*/
 
         },
-        child: Text(
-            'Sign in',
-            style: TextStyle( fontSize: 16.0,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,)
+      child: Container(
+        alignment: Alignment.center,
+        height: size.height / 13,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: const Color(0xFFF56B3F),
+        ),
+        child: InkWell(
+
+          child: Text(
+              'Sign in',
+              style: TextStyle( fontSize: 16.0,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,)
+          ),
         ),
       ),
     );
@@ -605,4 +656,157 @@ class _SignInFiveState extends State<SignInFive> {
       ),
     );
   }
+ Widget _changepassword(BuildContext context,Size size) {
+   return AlertDialog(
+     contentPadding: EdgeInsets.zero,
+     content: Stack(
+         children: <Widget>[
+           Form(
+             child: Column(
+                 mainAxisAlignment: MainAxisAlignment.start,
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                 mainAxisSize: MainAxisSize.min,
+                 children: <Widget>[
+
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       Padding(
+                           padding: EdgeInsets.fromLTRB(20, 10, 0, 10),
+                           child: Text("Forgot Password",
+                               style: GoogleFonts.poppins(
+                                 color: MyColors.AppthemeColor,
+                                 fontWeight:FontWeight.w700,
+                                 fontSize: 16,
+
+                               ))),
+                       Padding(
+                         padding: EdgeInsets.only(right: 20),
+                         child: InkResponse(
+                           onTap: () {
+                             Navigator.of(context).pop();
+                            // emailemptybool=false;
+                            // emailbool=false;
+                           },
+                           child: CircleAvatar(
+                             radius: 12,
+                             child: Icon(
+                               Icons.close,
+                               size: 18,
+                             ),
+                           ),
+                         ),
+                       ),
+                     ],
+                   ),
+                   Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                     Divider(
+                       height: 10,
+                       color: Colors.black26,
+                       thickness: 1,
+                     ),
+                   ],
+                   ),
+                   Container(height: 20,),
+                   Container(
+                     alignment: Alignment.center,
+                     height: size.height / 17,
+                     margin: EdgeInsets.only(right: 15,left: 15),
+                     decoration: BoxDecoration(
+                       borderRadius: BorderRadius.circular(10.0),
+                       color: const Color(0xFF4DA1B0),
+                     ),
+                     child: Padding(
+                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                       child: Row(
+                         crossAxisAlignment: CrossAxisAlignment.center,
+                         children: <Widget>[
+                           //mail icon
+                           const Icon(
+                             Icons.mail_lock_rounded,
+                             color: Colors.white70,
+                           ),
+                           const SizedBox(
+                             width: 16,
+                           ),
+
+                           //divider svg
+                           SvgPicture.string(
+                             '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
+                             width: 1.0,
+                             height: 15.5,
+                           ),
+                           const SizedBox(
+                             width: 16,
+                           ),
+
+                           //email address textField
+                           Expanded(
+                             child: TextField(
+                               controller: ressetpassword,
+                               maxLines: 1,
+                               cursorColor: Colors.white70,
+                               keyboardType: TextInputType.emailAddress,
+                               style: TextStyle(   fontSize: 14.0,
+                                 color: Colors.white,
+                                 fontWeight: FontWeight.w500,),
+                               decoration: InputDecoration(
+                                   hintText: 'Forgot Password',
+                                   hintStyle:TextStyle( fontSize: 14.0,
+                                     color: Colors.white70,
+                                     fontWeight: FontWeight.w500,),
+                                   border: InputBorder.none),
+                             ),
+                           ),
+                         ],
+                       ),
+                     ),
+                   ),
+                   Container(height: 20,),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     children: [
+                       Container(
+                         alignment: Alignment.center,
+                         height: size.height / 13,
+                         decoration: BoxDecoration(
+                           borderRadius: BorderRadius.circular(10.0),
+                           color: const Color(0xFFF56B3F),
+                         ),
+                         child: InkWell(
+                           onTap: () {
+
+
+                             /* Navigator.pushReplacement(
+    context, CupertinoPageRoute(builder: (_) =>  MainPage()));*/
+
+                           },
+                           child: Padding(
+                             padding: const EdgeInsets.all(15),
+                             child: Text(
+                                 'Update Password',
+                                 style: GoogleFonts.poppins( fontSize: 15.0,
+                                   color: Colors.white,
+                                   fontWeight: FontWeight.w600,)
+                             ),
+                           ),
+                         ),
+                       ),
+
+                     ],
+                   ),
+                   Container(height: 20,),
+                 ]),
+
+           ),
+         ]
+     ),
+   );
+ }
+ @override
+ void dispose() {
+   super.dispose();
+   // Cancel the timer when the page is disposed
+   _timer.cancel();
+ }
 }

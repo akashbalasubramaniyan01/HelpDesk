@@ -32,7 +32,8 @@ class TicketDeatils extends StatefulWidget {
   var AllTickets;
   int i;
   final VoidCallback onBack;
-   TicketDeatils(this.AllTickets,this.i,{required this.onBack});
+  final List<LoginModel> loginModels;
+   TicketDeatils(this.AllTickets,this.i,this.loginModels,{required this.onBack});
 
   @override
   State<TicketDeatils> createState() => _TicketDeatilsState();
@@ -851,7 +852,7 @@ class _TicketDeatilsState extends State<TicketDeatils> {
           widget.onBack();
           _timer = Timer.periodic(Duration(seconds: 2), (timer) {
             Navigator.pushReplacement(
-                context, CupertinoPageRoute(builder: (_) => MainPage(0)));
+                context, CupertinoPageRoute(builder: (_) => MainPage(0,loginModels: widget.loginModels,)));
             ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
           });
 

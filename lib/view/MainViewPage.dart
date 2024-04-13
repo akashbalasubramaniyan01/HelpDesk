@@ -15,11 +15,14 @@ import 'TicketList.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math';
 
+import 'package:aligned_dialog/aligned_dialog.dart';
 class MainPage extends StatefulWidget {
   int screenValue;
-   /*List <LoginModel> LoginModels;*/
-   MainPage(/*this.LoginModels*/this.screenValue);
+  final List<LoginModel> loginModels;
+   MainPage(this.screenValue,{required this.loginModels});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -50,6 +53,147 @@ class _MainPageState extends State<MainPage> {
   ];
 
   int ToatalCount =0;
+
+  WidgetBuilder get _localDialogBuilder {
+    return (BuildContext context) {
+      return Stack(
+        children: [
+          Positioned(
+            right: 20,
+            top: 60,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Container(
+
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [BoxShadow(color: Colors.black12,blurRadius: 33)],
+                    borderRadius: BorderRadius.all(Radius.circular(10),)),
+                child: DefaultTextStyle(
+                  style: TextStyle(fontSize: 18, color: Colors.black87),
+                  child: IntrinsicWidth(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+
+                            GestureDetector(
+                                onTap: () {
+
+                                },
+                                child: Text("Profile",style:GoogleFonts.poppins( fontSize: 15.0,
+                                  color: MyColors.AppthemeColor,
+                                  fontWeight: FontWeight.w800,))),
+
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },child: Icon(CupertinoIcons.clear,size: 16,))
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          height: 4,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        GestureDetector(
+                            onTap: () {
+                              print("hello2");
+                              //Navigator.of(context).pop();
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        boxShadow: [BoxShadow(blurRadius: 33,color: Colors.black12)],
+                                        borderRadius: BorderRadius.circular(50)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(Icons.person,color: Colors.orange),
+                                    )),
+                                Container(width: 10,),
+                                Text(widget.loginModels[0].name,style:GoogleFonts.poppins( fontSize: 14.0,
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w700,),),
+                              ],
+                            ),),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            print("hello2");
+                            //Navigator.of(context).pop();
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [BoxShadow(blurRadius: 33,color: Colors.black12)],
+                                      borderRadius: BorderRadius.circular(50)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(Icons.admin_panel_settings_outlined,color: Colors.orange),
+                                  )),
+                              Container(width: 10,),
+                              Text(widget.loginModels[0].userRoll,style:GoogleFonts.poppins( fontSize: 14.0,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w700,),),
+                            ],
+                          ),),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            print("hello2");
+                            //Navigator.of(context).pop();
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [BoxShadow(blurRadius: 33,color: Colors.black12)],
+                                      borderRadius: BorderRadius.circular(50)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(Icons.co_present_sharp,color: Colors.orange),
+                                  )),
+                              Container(width: 10,),
+                              Text(widget.loginModels[0].company,style:GoogleFonts.poppins( fontSize: 14.0,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w700,),),
+                            ],
+                          ),),
+                        SizedBox(
+                          height: 6,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    };
+  }
   @override
 void initState() {
 
@@ -83,6 +227,7 @@ void initState() {
       debugPrint(choice); //Debug the choice in console
     });
   }
+
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
@@ -93,8 +238,15 @@ void initState() {
         actions: [
           InkWell(
             onTap: () {
+              print("ggg");
+    showAlignedDialog(
+    context: context,
+    builder: _localDialogBuilder,
+    followerAnchor: Alignment.topRight,
+    targetAnchor: Alignment.topRight,
+    barrierColor: Colors.transparent);
 
-              showDialog(
+             /* showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
@@ -199,8 +351,11 @@ void initState() {
                                    ),
                                  ),
                                ),
-                               onPressed: ()  {
+                               onPressed: ()  async {
 
+                                 SharedPreferences prefs = await SharedPreferences.getInstance();
+                                 prefs.remove('UserName');
+                                 prefs.remove('PassWord');
 
                                  Navigator.of(context).pushReplacement(
                                    MaterialPageRoute(builder: (context) => SignInFive()),
@@ -211,7 +366,7 @@ void initState() {
                        ],)
                       ],
                     );
-                  });
+                  });*/
             },
             child: Container(
               decoration: BoxDecoration(
@@ -219,7 +374,7 @@ void initState() {
                   borderRadius: BorderRadius.circular(50)),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Icon(Icons.logout,color: Colors.black),
+                  child: Icon(Icons.person,color: Colors.orange),
                 )),
           ),
           Container(width: 10,)
@@ -320,15 +475,15 @@ void initState() {
           Container(
 
               width: size.width/1,
-              height: size.height/1,
-              child: TicketPage(TotalTicketCount))
+              height: size.height,
+              child: TicketPage(TotalTicketCount,widget.loginModels))
           else if(_page==1)
         Container(
           color: HexColor('FFFCFB'),
 
         width: size.width/1,
         height: size.height/1.2,
-        child: CreateTicket())
+        child: CreateTicket(widget.loginModels))
 
 
          /*   Container(
