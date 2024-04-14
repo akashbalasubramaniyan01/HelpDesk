@@ -417,7 +417,7 @@ class _TicketDeatilsState extends State<TicketDeatils> {
                                         TextSpan(
                                             children: [
                                               TextSpan(text: ": ", style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.black)),
-                                              TextSpan(text: widget.AllTickets[widget.i]['Status'], style:GoogleFonts.poppins(color: Colors.black,fontWeight:FontWeight.bold))
+                                              TextSpan(text: widget.AllTickets[widget.i]['Status']=="O"?"Open":widget.AllTickets[widget.i]['Status']=="C"?"Closed":"Resolved", style:GoogleFonts.poppins(color: Colors.black,fontWeight:FontWeight.bold))
                                             ]),
                                       ),
                                     )

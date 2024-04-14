@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:helpdesk/view/login.dart';
 import 'package:helpdesk/view/signin.dart';
 import '../model/LoginModel.dart';
+import 'ChatScreen.dart';
 import 'CreateTicket.dart';
 import 'TicketList.dart';
 import 'package:flutter_svg/svg.dart';
@@ -19,6 +20,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
 import 'package:aligned_dialog/aligned_dialog.dart';
+
+import 'TicketSearchDetails.dart';
 class MainPage extends StatefulWidget {
   int screenValue;
   final List<LoginModel> loginModels;
@@ -183,70 +186,11 @@ class _MainPageState extends State<MainPage> {
                         SizedBox(
                           height: 6,
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    };
-  }
-  @override
-void initState() {
+                        GestureDetector(
+                          onTap: () {
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      final CurvedNavigationBarState? navBarState =
-          _bottomNavigationKey.currentState;
-      navBarState?.setPage(widget.screenValue); // Navigating to the second page
-    });
-    // TODO: implement initState
-    super.initState();
-  }
-
-  late String _radioValue ="Open"; //Initial definition of radio button value
-  late String choice;
-   radioButtonChanges(String? value) {
-    setState(() {
-      _radioValue = value!;
-      switch (value) {
-        case 'Open':
-          choice = value!;
-          break;
-        case 'Closed':
-          choice = value!;
-          break;
-        case 'Resolved':
-          choice = value!;
-          break;
-        default:
-          choice = "";
-      }
-      debugPrint(choice); //Debug the choice in console
-    });
-  }
-
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF21899C),
-        //elevation: 1,
-        leading: Icon(Icons.sort,color: Colors.white),
-        actions: [
-          InkWell(
-            onTap: () {
-              print("ggg");
-    showAlignedDialog(
-    context: context,
-    builder: _localDialogBuilder,
-    followerAnchor: Alignment.topRight,
-    targetAnchor: Alignment.topRight,
-    barrierColor: Colors.transparent);
-
-             /* showDialog(
+                            Navigator.of(context).pop();
+                             showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
@@ -366,7 +310,92 @@ void initState() {
                        ],)
                       ],
                     );
-                  });*/
+                  });
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [BoxShadow(blurRadius: 33,color: Colors.black12)],
+                                      borderRadius: BorderRadius.circular(50)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(Icons.logout,color: Colors.orange),
+                                  )),
+                              Container(width: 10,),
+                              Text("Sign Out",style:GoogleFonts.poppins( fontSize: 14.0,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w700,),),
+                            ],
+                          ),),
+                        SizedBox(
+                          height: 6,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    };
+  }
+  @override
+void initState() {
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      final CurvedNavigationBarState? navBarState =
+          _bottomNavigationKey.currentState;
+      navBarState?.setPage(widget.screenValue); // Navigating to the second page
+    });
+    // TODO: implement initState
+    super.initState();
+  }
+
+  late String _radioValue ="Open"; //Initial definition of radio button value
+  late String choice;
+   radioButtonChanges(String? value) {
+    setState(() {
+      _radioValue = value!;
+      switch (value) {
+        case 'Open':
+          choice = value!;
+          break;
+        case 'Closed':
+          choice = value!;
+          break;
+        case 'Resolved':
+          choice = value!;
+          break;
+        default:
+          choice = "";
+      }
+      debugPrint(choice); //Debug the choice in console
+    });
+  }
+
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF21899C),
+        //elevation: 1,
+        leading: Icon(Icons.sort,color: Colors.white),
+        actions: [
+          InkWell(
+            onTap: () {
+              print("ggg");
+    showAlignedDialog(
+    context: context,
+    builder: _localDialogBuilder,
+    followerAnchor: Alignment.topRight,
+    targetAnchor: Alignment.topRight,
+    barrierColor: Colors.transparent);
+
+
             },
             child: Container(
               decoration: BoxDecoration(
@@ -448,29 +477,7 @@ void initState() {
         crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-          /* Padding(
-              padding: const EdgeInsets.only(left: 15,top: 10),
-              child: Text.rich(
-                TextSpan(
-                  style:TextStyle(  fontSize: 23.12,
-                    color: Colors.white,
-                    letterSpacing: 1.999999953855673,),
-                  children:  [
-                    TextSpan(
-                      text: 'Hello\n',
-                        style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.bodyLarge)
-                    ),
-                    TextSpan(
-                      text: widget.LoginModels[0].name,
-                      style: GoogleFonts.openSans(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),*/
+
           if(_page==0)
           Container(
 
@@ -478,109 +485,18 @@ void initState() {
               height: size.height,
               child: TicketPage(TotalTicketCount,widget.loginModels))
           else if(_page==1)
-        Container(
+           Container(
           color: HexColor('FFFCFB'),
 
         width: size.width/1,
         height: size.height/1.2,
         child: CreateTicket(widget.loginModels))
-
-
-         /*   Container(
-              width: 400,
-              margin: EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.white,borderRadius:  BorderRadius.circular(20)),
-              child: ExpansionTile(
-
-                title: Text('Select Status',style: GoogleFonts.poppins(fontWeight: FontWeight.w700),),
-
-                children: [
-                  ListTile(
-                    title: Text('This is tile number '),
-                  ),
-                ],
-
-              ),
-            )*/
-
           else if(_page==2)
-              Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16, top: 15, bottom: 8),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(38.0),
-                            ),
-                            boxShadow: <BoxShadow>[
-                              BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  offset: const Offset(0, 2),
-                                  blurRadius: 8.0),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 16, right: 16, top: 4, bottom: 4),
-                            child: TextField(
-                              onChanged: (String txt) {},
-                              style: const TextStyle(
-                                fontSize: 18,
-                              ),
-
-                              cursorColor: MyColors.AppthemeColor,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Search Ticket Details',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(38.0),
-                        ),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                              color: Colors.grey.withOpacity(0.4),
-                              offset: const Offset(0, 2),
-                              blurRadius: 8.0),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(32.0),
-                          ),
-                          onTap: () {
-
-
-                            FocusScope.of(context).requestFocus(FocusNode());
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Icon(CupertinoIcons.search,
-                                size: 20,
-                                color: Colors.black),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              Container(
+                  color: HexColor('FFFCFB'),
+                  width: size.width/1,
+                  height: size.height/1.2,
+                  child: TicketSearch(TotalTicketCount,widget.loginModels))
 
         ],
       ),

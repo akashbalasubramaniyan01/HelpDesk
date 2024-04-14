@@ -608,7 +608,7 @@ class _TicketPageState extends State<TicketPage> {
   int ClosedCount = 0;
   int TotalTickesCount = 0;
   List searchResult = [];
-  void RaedAllTickets() async {
+  /*void RaedAllTickets() async {
     var client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
 
     var response = await client.get(Uri.parse('https://elteesolutions.com/helpdesk/apinewticket'),headers: {
@@ -646,7 +646,61 @@ print(response.statusCode);
     } else {
       print(response.reasonPhrase);
     }
+  }*/
+
+
+
+  void RaedAllTickets() async {
+    setState(() {
+      ActiveScreen=true;
+    });
+    var client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
+
+    var response = await client.put(Uri.parse('${GlobalConfiguration().get("ApiURl")}apihelpdesk'),headers: {
+      'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+      'Content-Type': 'application/json',
+      'Cookie': 'ci_session=3gnid18nsvll4u99839vfroba1ihd58t; csrfcookiei2help=4912ec8965916cc488eeb6aa70918fa7'
+    },
+      body: json.encode({
+        "Company": widget.loginModels[0].company,
+
+        })
+    );
+
+print(response.statusCode);
+    if (response.statusCode == 200) {
+     setState(() {
+       AllTickets.clear();
+       print( response.body);
+       var jsonResponse = json.decode(response.body);
+       var JsonData = jsonResponse['data'];
+       AllTickets.addAll(JsonData);
+       AllTickets.forEach((element) {
+         ticket_data_filtered.add(element);
+         ticket_data_api_list.add(element);
+       });
+
+
+       //ticket_data_api_list.addAll(AllTickets);
+
+       print("ticket_data_filtered---------$ticket_data_filtered");
+
+       TotalTickesCount = AllTickets.length;
+       OpenCount =  ticket_data_api_list.where((element) => element['Status']=="O").length;
+       ClosedCount =  ticket_data_api_list.where((element) => element['Status']=="C").length;
+       PendingCount =  ticket_data_api_list.where((element) => element['Status']=="R").length;
+
+       print(AllTickets);
+     });
+
+    } else {
+      print(response.reasonPhrase);
+    }
+    setState(() {
+      ActiveScreen=false;
+    });
   }
+  bool ActiveScreen = true;
   @override
   void initState() {
     // TODO: implement initState
@@ -657,50 +711,11 @@ print(response.statusCode);
     final size = MediaQuery.of(context).size;
     return   Scaffold(
       backgroundColor: MyColors.AppthemeColor,
-     /* bottomSheet: Container(
-        width: size.width/1,
-        height: 80,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-        BoxShadow(
-        color: Colors.black12,
-          blurRadius: 3.0,
-          spreadRadius: 3.0,
-        ), //BoxShadow
-      ]),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 10,bottom: 25,right: 25,left: 25),
-          child: SizedBox(
-              height:50,width: size.width/1,
-              child:ElevatedButton(
-                onPressed: (){
-                  TicketCreate(size);
-                },
-                child: Center(
-                  child: Row(
-                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.add,color: Colors.white,weight: 66,),
-                      Text("  Create New Ticket",style: GoogleFonts.quicksand( fontSize: 16.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,)),
-                    ],
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:   Color(0xFFF56B3F),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                      //border radius equal to or more than 50% of width
-                    )
-                ),
-              )
-          ),
-        ),
-      ),*/
-      //floatingActionButton: FloatingActionButton(onPressed: () {  },child: const Icon(CupertinoIcons.create_solid,color: MyColors.AppthemeColor,),),
-      body:    Container(
+      body:   ActiveScreen==true? Center(child: SpinKitThreeInOut(
+
+        color: Colors.orange,
+        size: 30.0,
+      )): Container(
             margin: const EdgeInsets.only(top: 0),
             decoration:  BoxDecoration(
 

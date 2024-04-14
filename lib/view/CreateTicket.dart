@@ -51,6 +51,7 @@ class _CreateTicketState extends State<CreateTicket> {
     String formattedDate = '${now.day}-${(now.month)}-${(now.year)}';
     String formattedTime = '${(now.hour)}:${(now.minute)}';
     DatetimeController.text = formattedDate+" "+ formattedTime;
+    issuecode.text = widget.loginModels[0].company;
 
   }
 
@@ -99,7 +100,7 @@ class _CreateTicketState extends State<CreateTicket> {
 
           final materialBanner = MaterialBanner(
             /// need to set following properties for best effect of awesome_snackbar_content
-            elevation: 2,
+            elevation: 0,
             backgroundColor: Colors.transparent,
             forceActionsBelow: false,
             content: AwesomeSnackbarContent(
@@ -115,12 +116,12 @@ class _CreateTicketState extends State<CreateTicket> {
             actions: const [SizedBox.shrink()],
           );
 
+        setState(() {
           ScaffoldMessenger.of(context)
             ..hideCurrentMaterialBanner()
             ..showMaterialBanner(materialBanner);
-          Future.delayed(const Duration(seconds: 1), () {
-            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-          });
+        });
+
           Navigator.pushReplacement(
               context, CupertinoPageRoute(builder: (_) => MainPage(0, loginModels:widget.loginModels,)));
 
@@ -601,6 +602,7 @@ class _CreateTicketState extends State<CreateTicket> {
                                 Expanded(
                                   flex: 1,
                                   child: TextField(
+                                    enabled: false,
                                     controller: issuecode,
                                     maxLines: 1,
                                     onChanged: (value) {
