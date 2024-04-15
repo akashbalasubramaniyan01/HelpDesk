@@ -883,7 +883,13 @@ flex: 1,
                                                     Column(
                                                       children: [
                                                         Text("Ticket No: " + AllTickets[i]['TicketNo'], style: GoogleFonts.quicksand(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),),
-                                                        Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.quicksand(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),),
+                                                        Padding(
+                                                          padding: const EdgeInsets.only(left: 0),
+                                                          child: Container(
+                                                              padding: const EdgeInsets.only(left: 5),
+                                                              width: MediaQuery.of(context).size.width/2.6,
+                                                              child: Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.quicksand(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),)),
+                                                        ),
                                                       ],
                                                     ),
                                                     Column(

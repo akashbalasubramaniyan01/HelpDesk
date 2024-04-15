@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,7 +20,7 @@ import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:aligned_dialog/aligned_dialog.dart';
 
 import 'TicketSearchDetails.dart';
@@ -56,7 +58,20 @@ class _MainPageState extends State<MainPage> {
   ];
 
   int ToatalCount =0;
+  DateTime currentBackPressTime = DateTime.now();
 
+  Future<bool> onWillPop() {
+    DateTime now = DateTime.now();
+    if (now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(
+          msg: 'Tap Again to Exit');
+      return Future.value(false);
+    }
+
+    exit(0);
+    return Future.value(true);
+  }
   WidgetBuilder get _localDialogBuilder {
     return (BuildContext context) {
       return Stack(
@@ -97,9 +112,9 @@ class _MainPageState extends State<MainPage> {
                                   fontWeight: FontWeight.w800,))),
 
                             GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                              },child: Icon(CupertinoIcons.clear,size: 16,))
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                },child: Icon(CupertinoIcons.clear,size: 16,))
                           ],
                         ),
                         SizedBox(
@@ -112,27 +127,27 @@ class _MainPageState extends State<MainPage> {
                           height: 10,
                         ),
                         GestureDetector(
-                            onTap: () {
-                              print("hello2");
-                              //Navigator.of(context).pop();
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        boxShadow: [BoxShadow(blurRadius: 33,color: Colors.black12)],
-                                        borderRadius: BorderRadius.circular(50)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Icon(Icons.person,color: Colors.orange),
-                                    )),
-                                Container(width: 10,),
-                                Text(widget.loginModels[0].name,style:GoogleFonts.poppins( fontSize: 14.0,
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w700,),),
-                              ],
-                            ),),
+                          onTap: () {
+                            print("hello2");
+                            //Navigator.of(context).pop();
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [BoxShadow(blurRadius: 33,color: Colors.black12)],
+                                      borderRadius: BorderRadius.circular(50)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(Icons.person,color: Colors.orange),
+                                  )),
+                              Container(width: 10,),
+                              Text(widget.loginModels[0].name,style:GoogleFonts.poppins( fontSize: 14.0,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w700,),),
+                            ],
+                          ),),
                         SizedBox(
                           height: 3,
                         ),
@@ -190,127 +205,129 @@ class _MainPageState extends State<MainPage> {
                           onTap: () {
 
                             Navigator.of(context).pop();
-                             showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32.0))),
-                      contentPadding: EdgeInsets.all(0),
-                      elevation: 0,
-                      scrollable: true,
-                      backgroundColor: Colors.white,
-                      content: Padding(
-                          padding: const EdgeInsets.all(0),
-                          child: Column(
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(32.0))),
+                                    contentPadding: EdgeInsets.all(0),
+                                    elevation: 0,
+                                    scrollable: true,
+                                    backgroundColor: Colors.white,
+                                    content: Padding(
+                                        padding: const EdgeInsets.all(0),
+                                        child: Column(
 
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(32),topLeft: Radius.circular(32)), color: Colors.cyan,),
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(32),topLeft: Radius.circular(32)), color: Colors.cyan,),
 
-                                width: 500,height: 180,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Center(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all( color: Colors.white,width: 2),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(Icons.person,color: Colors.white,size: 65,),
+                                              width: 500,height: 180,
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(20.0),
+                                                child: Center(
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all( color: Colors.white,width: 2),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Icon(Icons.person,color: Colors.white,size: 65,),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 15,bottom: 15),
+                                              child: Center(
+                                                child: Text('Are you sure you want to logout',style: GoogleFonts.poppins(
+
+                                                  color:
+                                                  Colors.black,
+                                                  fontSize:
+                                                  14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),),
+                                              ),
+                                            ),
+
+                                          ],
+                                        )
                                     ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 15,bottom: 15),
-                                child: Center(
-                                  child: Text('Are you sure you want to logout',style: GoogleFonts.poppins(
+                                    actions: [
 
-                                    color:
-                                    Colors.black,
-                                    fontSize:
-                                    14,
-                                    fontWeight: FontWeight.bold,
-                                  ),),
-                                ),
-                              ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            width:80,
+                                            margin: EdgeInsets.all(15),
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop(false);
+                                              },
+                                              child: Text('No',style: TextStyle(
+                                                color:
+                                                Colors.white,
+                                                fontSize:
+                                                14,
+                                                fontFamily:
+                                                'Proxima_Nova_Font',
+                                                fontWeight: FontWeight.bold,
+                                              ),),
+                                              style:ButtonStyle(
+                                                foregroundColor: MaterialStateProperty.all<Color>(Color(0xFFF56B3F)),
+                                                backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFF56B3F)),
+                                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
 
-                            ],
-                          )
-                      ),
-                      actions: [
+                                              alignment: Alignment.center,
+                                              width:80,
+                                              margin: EdgeInsets.all(15),
+                                              child:   ElevatedButton(
+                                                child: Text(
+                                                  "Yes",
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14,
+                                                    fontFamily: 'Proxima_Nova_Font',
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                style: ButtonStyle(
+                                                  foregroundColor: MaterialStateProperty.all<Color>(Colors.grey),
+                                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
+                                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                                                    ),
+                                                  ),
+                                                ),
+                                                onPressed: ()  async {
 
-                       Row(
-                         mainAxisAlignment: MainAxisAlignment.center,
-                         children: [
-                         Container(
-                           width:80,
-                           margin: EdgeInsets.all(15),
-                           child: ElevatedButton(
-                             onPressed: () {
-                               Navigator.of(context).pop(false);
-                             },
-                             child: Text('No',style: TextStyle(
-                               color:
-                               Colors.white,
-                               fontSize:
-                               14,
-                               fontFamily:
-                               'Proxima_Nova_Font',
-                               fontWeight: FontWeight.bold,
-                             ),),
-                             style:ButtonStyle(
-                               foregroundColor: MaterialStateProperty.all<Color>(Color(0xFFF56B3F)),
-                               backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFF56B3F)),
-                               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                 RoundedRectangleBorder(
-                                   borderRadius: BorderRadius.all(Radius.circular(8)),
-                                 ),
-                               ),
-                             ),
-                           ),
-                         ),
-                         Container(
+                                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                                  setState(() {
+                                                    prefs.remove('UserName');
+                                                    prefs.remove('PassWord');
+                                                  });
+                                                  Navigator.pushReplacement(
+                                                    context,MaterialPageRoute(builder: (context) => SignInFive()),);
 
-                           alignment: Alignment.center,
-                             width:80,
-                             margin: EdgeInsets.all(15),
-                             child:   ElevatedButton(
-                               child: Text(
-                                 "Yes",
-                                 style: TextStyle(
-                                   color: Colors.black,
-                                   fontSize: 14,
-                                   fontFamily: 'Proxima_Nova_Font',
-                                   fontWeight: FontWeight.bold,
-                                 ),
-                               ),
-                               style: ButtonStyle(
-                                 foregroundColor: MaterialStateProperty.all<Color>(Colors.grey),
-                                 backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
-                                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                   RoundedRectangleBorder(
-                                     borderRadius: BorderRadius.all(Radius.circular(8)),
-                                   ),
-                                 ),
-                               ),
-                               onPressed: ()  async {
 
-                                 SharedPreferences prefs = await SharedPreferences.getInstance();
-                                 prefs.remove('UserName');
-                                 prefs.remove('PassWord');
-
-                                 Navigator.of(context).pushReplacement(
-                                   MaterialPageRoute(builder: (context) => SignInFive()),
-                                 );
-                               },
-                             )
-                         ),
-                       ],)
-                      ],
-                    );
-                  });
+                                                },
+                                              )
+                                          ),
+                                        ],)
+                                    ],
+                                  );
+                                });
                           },
                           child: Row(
                             children: [
@@ -379,130 +396,133 @@ void initState() {
 
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF21899C),
-        //elevation: 1,
-        leading: Icon(Icons.sort,color: Colors.white),
-        actions: [
-          InkWell(
-            onTap: () {
-              print("ggg");
-    showAlignedDialog(
-    context: context,
-    builder: _localDialogBuilder,
-    followerAnchor: Alignment.topRight,
-    targetAnchor: Alignment.topRight,
-    barrierColor: Colors.transparent);
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF21899C),
+          //elevation: 1,
+          leading: Icon(Icons.sort,color: Colors.white),
+          actions: [
+            InkWell(
+              onTap: () {
+                print("ggg");
+      showAlignedDialog(
+      context: context,
+      builder: _localDialogBuilder,
+      followerAnchor: Alignment.topRight,
+      targetAnchor: Alignment.topRight,
+      barrierColor: Colors.transparent);
 
 
-            },
-            child: Container(
-              decoration: BoxDecoration(
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                    borderRadius: BorderRadius.circular(50)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(Icons.person,color: Colors.orange),
+                  )),
+            ),
+            Container(width: 10,)
+          ],
+          title:  Text.rich(
+            TextSpan(
+              style:TextStyle(  fontSize: 23.12,
                 color: Colors.white,
-                  borderRadius: BorderRadius.circular(50)),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(Icons.person,color: Colors.orange),
-                )),
-          ),
-          Container(width: 10,)
-        ],
-        title:  Text.rich(
-          TextSpan(
-            style:TextStyle(  fontSize: 23.12,
-              color: Colors.white,
-              letterSpacing: 1.999999953855673,),
-            children: const [
-              TextSpan(
-                text: 'HELP',
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
+                letterSpacing: 1.999999953855673,),
+              children: const [
+                TextSpan(
+                  text: 'HELP',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-              TextSpan(
-                text: ' DESK',
-                style: TextStyle(
-                  color: Color(0xFFFE9879),
-                  fontWeight: FontWeight.w800,
+                TextSpan(
+                  text: ' DESK',
+                  style: TextStyle(
+                    color: Color(0xFFFE9879),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-      backgroundColor: const Color(0xFF21899C),
-      bottomNavigationBar:  CurvedNavigationBar(
-    key: _bottomNavigationKey,
+        backgroundColor: const Color(0xFF21899C),
+        bottomNavigationBar:  CurvedNavigationBar(
+      key: _bottomNavigationKey,
 
-    backgroundColor: Colors.white,
-    buttonBackgroundColor: Color(0xFF21899C),
-    color: Color(0xFF21899C),
-    index: 0,
-    height: 70,
-    items: [
-      SvgPicture.asset(
-        "assets/home-icon.svg",
+      backgroundColor: Colors.white,
+      buttonBackgroundColor: Color(0xFF21899C),
+      color: Color(0xFF21899C),
+      index: 0,
+      height: 70,
+      items: [
+        SvgPicture.asset(
+          "assets/home-icon.svg",
+          width: 25,
+          height: 25,
+          color: Colors.white,
+        ),
+        SvgPicture.asset(
+        "assets/movie-ticket-icon.svg",
         width: 25,
         height: 25,
-        color: Colors.white,
+          color: Colors.white,
+        ),
+        SvgPicture.asset(
+          "assets/how-to-icon.svg",
+          width: 25,
+          height: 25,
+          color: Colors.white,
+        ),
+      ],
+
+      animationCurve: Curves.easeInOut,
+      animationDuration: Duration(milliseconds: 600),
+      onTap: (index) {
+      setState(() {
+      _page = index;
+      });
+      },
+
       ),
-      SvgPicture.asset(
-      "assets/movie-ticket-icon.svg",
-      width: 25,
-      height: 25,
-        color: Colors.white,
+      body:  Scaffold(
+        backgroundColor:   const Color(0xFF21899C),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+
+          children: [
+
+            if(_page==0)
+            Container(
+
+                width: size.width/1,
+                height: size.height,
+                child: TicketPage(TotalTicketCount,widget.loginModels))
+            else if(_page==1)
+             Container(
+            color: HexColor('FFFCFB'),
+
+          width: size.width/1,
+          height: size.height/1.2,
+          child: CreateTicket(widget.loginModels))
+            else if(_page==2)
+                Container(
+                    color: HexColor('FFFCFB'),
+                    width: size.width/1,
+                    height: size.height/1.1,
+                    child: TicketSearch(TotalTicketCount,widget.loginModels))
+
+          ],
+        ),
       ),
-      SvgPicture.asset(
-        "assets/how-to-icon.svg",
-        width: 25,
-        height: 25,
-        color: Colors.white,
-      ),
-    ],
 
-    animationCurve: Curves.easeInOut,
-    animationDuration: Duration(milliseconds: 600),
-    onTap: (index) {
-    setState(() {
-    _page = index;
-    });
-    },
-
-    ),
-    body:  Scaffold(
-      backgroundColor:   const Color(0xFF21899C),
-    body: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-
-        children: [
-
-          if(_page==0)
-          Container(
-
-              width: size.width/1,
-              height: size.height,
-              child: TicketPage(TotalTicketCount,widget.loginModels))
-          else if(_page==1)
-           Container(
-          color: HexColor('FFFCFB'),
-
-        width: size.width/1,
-        height: size.height/1.2,
-        child: CreateTicket(widget.loginModels))
-          else if(_page==2)
-              Container(
-                  color: HexColor('FFFCFB'),
-                  width: size.width/1,
-                  height: size.height/1.2,
-                  child: TicketSearch(TotalTicketCount,widget.loginModels))
-
-        ],
-      ),
-    ),
-
-    ));
+      )),
+    );
   }
   TotalTicketCount(var TicketData){
     setState(() {

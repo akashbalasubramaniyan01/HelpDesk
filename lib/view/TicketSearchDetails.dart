@@ -670,8 +670,22 @@ class _TicketSearchState extends State<TicketSearch> {
 
       body:      Column(
         children: [
-          Container(height: 20,),
 
+          Container(
+            width: size.width,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [new BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 22,
+                ),]),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(child:  Text("Ticket Comment Status",style: GoogleFonts.poppins( fontSize: 23.0,
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,),)),
+            ),
+          ),
           if(AllTickets.isNotEmpty)
 
             SingleChildScrollView(
@@ -689,9 +703,7 @@ class _TicketSearchState extends State<TicketSearch> {
                             color: Colors.white,
                           //  decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black38,blurRadius: 12)],color: Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(13))),
                             child: InkWell(
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(widget.loginModels,AllTickets[i]['TicketNo'],AllTickets[i]['ShortText']),));
-                              },
+
                               child: Card(
                                 color: Colors.white,
                                 elevation: 4,
@@ -713,11 +725,17 @@ class _TicketSearchState extends State<TicketSearch> {
                                       ),
                                       Column(
                                         children: [
-                                          Container(
-                                            width: 120,
-                                            height: 30,
-                                            decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black38,blurRadius: 4)],color: Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(13))),
-                                            child: Center(child: Text("Command", style: GoogleFonts.poppins(fontSize: 15, color:  MyColors.AppthemeColor, fontWeight: FontWeight.bold),)),
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(widget.loginModels,AllTickets[i]['TicketNo'],AllTickets[i]['ShortText']),));
+
+                                            },
+                                            child: Container(
+                                              width: 120,
+                                              height: 30,
+                                              decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black38,blurRadius: 4)],color: Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(13))),
+                                              child: Center(child: Text("Commant", style: GoogleFonts.poppins(fontSize: 15, color:  MyColors.AppthemeColor, fontWeight: FontWeight.bold),)),
+                                            ),
                                           )
                                         ],
                                       )

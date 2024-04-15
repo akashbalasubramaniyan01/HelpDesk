@@ -222,13 +222,13 @@ class _TicketDeatilsState extends State<TicketDeatils> {
                                       ),
                                     ),
                                     Container(
-
+   width: 200,
                                       child:
                                       Text.rich(
                                         TextSpan(
                                             children: [
                                               TextSpan(text: ": ", style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.black)),
-                                              TextSpan(text: widget.AllTickets[widget.i]['ShortText'], style: GoogleFonts.poppins(color: Colors.black,fontWeight:FontWeight.bold))
+                                              TextSpan(text: widget.AllTickets[widget.i]['ShortText'], style: GoogleFonts.poppins(color: Colors.black,fontWeight:FontWeight.bold,))
                                             ]),
                                       ),
                                     )

@@ -162,7 +162,7 @@ class _CreateTicketState extends State<CreateTicket> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(child:  Text("Create Ticket",style: GoogleFonts.poppins( fontSize: 25.0,
-                    color: MyColors.AppthemeColor,
+                    color: Colors.orange,
                     fontWeight: FontWeight.bold,),)),
                 ),
               ),
@@ -671,11 +671,20 @@ class _CreateTicketState extends State<CreateTicket> {
                               color: Colors.white,
                               size: 50.0,
                             )
-                            ) :Text(
-                                'Create Ticket',
-                                style: GoogleFonts.poppins( fontSize: 25.0,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,)
+                            ) :Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(CupertinoIcons.add,color: Colors.white,),
+                                  Container(width: 8,),
+                                  Text(
+                                      'Create Ticket',
+                                      style: GoogleFonts.poppins( fontSize: 25.0,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w800,)
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
