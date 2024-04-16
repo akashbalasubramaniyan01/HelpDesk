@@ -491,34 +491,37 @@ void initState() {
       ),
       body:  Scaffold(
         backgroundColor:   const Color(0xFF21899C),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
 
-          children: [
+        children: [
 
-            if(_page==0)
-            Container(
+          if(_page==0)
+            Expanded(
+              flex: 1,
+              child: Container(
 
-                width: size.width/1,
-                height: size.height,
-                child: TicketPage(TotalTicketCount,widget.loginModels))
-            else if(_page==1)
-             Container(
-            color: HexColor('FFFCFB'),
+                  width: size.width/1,
+                  height: size.height,
+                  child: TicketPage(TotalTicketCount,widget.loginModels)),
+            )
+          else if(_page==1)
+            Expanded(
+              child: Container(
+                  color: HexColor('FFFCFB'),
 
-          width: size.width/1,
-          height: size.height/1.2,
-          child: CreateTicket(widget.loginModels))
-            else if(_page==2)
-                Container(
-                    color: HexColor('FFFCFB'),
-                    width: size.width/1,
-                    height: size.height/1.1,
-                    child: TicketSearch(TotalTicketCount,widget.loginModels))
+                  width: size.width/1,
+                  height: size.height/1.2,
+                  child: CreateTicket(widget.loginModels)),
+            )
+          else if(_page==2)
+              Container(
+                  color: HexColor('FFFCFB'),
+                  width: size.width/1,
+                  height: size.height/1.1,
+                  child: TicketSearch(TotalTicketCount,widget.loginModels))
 
-          ],
-        ),
+        ],
       ),
 
       )),
