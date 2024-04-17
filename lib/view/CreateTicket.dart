@@ -23,7 +23,8 @@ import '../utils/colors.dart';
 import 'package:intl/intl.dart';
 class CreateTicket extends StatefulWidget {
   final List<LoginModel> loginModels;
-  const CreateTicket(this.loginModels);
+  var AllCompanyList;
+   CreateTicket(this.loginModels,this.AllCompanyList);
 
   @override
   State<CreateTicket> createState() => _CreateTicketState();
@@ -43,8 +44,10 @@ class _CreateTicketState extends State<CreateTicket> {
   String UserNameAllert = "";
   String CodeAllert = "";
   String dropdownvalue = 'Moderate';
+  String CompanyCode = '4P';
   String pvalue = 'Hardware Failure';
   var items =  ['Moderate','Critical','High','Low'];
+  var CompanyCodeValues =  [];
   var itemsissue =  ['Hardware Failure','Network/ WiFi Issue','Printer Problem','E-Mail Issue','Office 365','CCTV','Software Issue','Other'];
   void _getDateAndTime() {
     DateTime now = DateTime.now();
@@ -52,6 +55,11 @@ class _CreateTicketState extends State<CreateTicket> {
     String formattedTime = '${(now.hour)}:${(now.minute)}';
     DatetimeController.text = formattedDate+" "+ formattedTime;
     issuecode.text = widget.loginModels[0].company;
+
+    var companies = widget.AllCompanyList.map((ticket) => ticket['Company']).toList();
+print(companies);
+    CompanyCodeValues = widget.AllCompanyList.map((ticket) => ticket['Company']).toSet().toList();
+
 
   }
 
@@ -146,9 +154,11 @@ class _CreateTicketState extends State<CreateTicket> {
     final size = MediaQuery.of(context).size;
     return  SingleChildScrollView(
       child: Container(
+
         //height: MediaQuery.of(context).size.height * 0.77,
         child: SingleChildScrollView(
           child: Column(
+
             children:[
             Container(height: 20,),
               Container(
@@ -172,7 +182,7 @@ class _CreateTicketState extends State<CreateTicket> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
-
+crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Container(height: 15,),
                         Container(
@@ -556,7 +566,53 @@ class _CreateTicketState extends State<CreateTicket> {
                             ),
                           ),
                         ),
+                        Container(height: 5,),
+                        Text("  Select Company Code",style:GoogleFonts.poppins( fontSize: 14.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400,),),
+                        Container(height: 5,),
+                        if(CompanyCodeValues.isNotEmpty)
+                        Container(
+                          width: size.width,
+                          height: 50,
+                          padding: EdgeInsets.all(5.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              color:  Colors.white,
 
+                              boxShadow: [new BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 7,
+                              ),]   ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              elevation: 0,
+                              value: CompanyCode,
+
+                              icon: Icon(Icons.keyboard_arrow_down),
+
+                              items:CompanyCodeValues.map((items) {
+                                return DropdownMenuItem(
+
+                                    value: items,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 5),
+                                      child: Text(items),
+                                    )
+                                );
+                              }
+                              ).toList(),
+
+                              onChanged:  (value) {
+
+                                setState(() {
+                                  CompanyCode = value.toString();
+                                });
+                              },
+
+                            ),
+                          ),
+                        ),
 
                         Text(IssueAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
                           color: Colors.red,

@@ -18,9 +18,9 @@ import '../model/LoginModel.dart';
 import 'ChatScreen.dart';
 import 'TicketDetails.dart';
 class TicketSearch extends StatefulWidget {
-  Function TotalTicketCount;
+  Function TicketCompanyCodeGet;
   final List<LoginModel> loginModels;
-  TicketSearch(this.TotalTicketCount,this.loginModels);
+  TicketSearch(this.TicketCompanyCodeGet,this.loginModels);
 
   @override
   State<TicketSearch> createState() => _TicketSearchState();

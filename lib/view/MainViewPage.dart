@@ -360,6 +360,7 @@ class _MainPageState extends State<MainPage> {
       );
     };
   }
+  var AllCompanyList ;
   @override
 void initState() {
 
@@ -498,28 +499,32 @@ void initState() {
 
           if(_page==0)
             Expanded(
-              flex: 1,
+              flex: 60,
               child: Container(
 
                   width: size.width/1,
                   height: size.height,
-                  child: TicketPage(TotalTicketCount,widget.loginModels)),
+                  child: TicketPage(TicketCompanyCodeGet,widget.loginModels)),
             )
           else if(_page==1)
             Expanded(
+              flex: 60,
               child: Container(
                   color: HexColor('FFFCFB'),
 
                   width: size.width/1,
-                  height: size.height/1.2,
-                  child: CreateTicket(widget.loginModels)),
+                  height: size.height/1,
+                  child: CreateTicket(widget.loginModels,AllCompanyList)),
             )
           else if(_page==2)
-              Container(
-                  color: HexColor('FFFCFB'),
-                  width: size.width/1,
-                  height: size.height/1.1,
-                  child: TicketSearch(TotalTicketCount,widget.loginModels))
+              Expanded(
+                flex: 60,
+                child: Container(
+                    color: HexColor('FFFCFB'),
+                    width: size.width/1,
+                    height: size.height/1,
+                    child: TicketSearch(TotalTicketCount,widget.loginModels)),
+              )
 
         ],
       ),
@@ -527,6 +532,13 @@ void initState() {
       )),
     );
   }
+  TicketCompanyCodeGet(var CompanyCodeDetails){
+     setState(() {
+       AllCompanyList = CompanyCodeDetails;
+       print("AllCompanyList$AllCompanyList");
+     });
+  }
+
   TotalTicketCount(var TicketData){
     setState(() {
 

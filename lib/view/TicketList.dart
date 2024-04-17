@@ -608,47 +608,12 @@ class _TicketPageState extends State<TicketPage> {
   int ClosedCount = 0;
   int TotalTickesCount = 0;
   List searchResult = [];
-  /*void RaedAllTickets() async {
-    var client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
 
-    var response = await client.get(Uri.parse('https://elteesolutions.com/helpdesk/apinewticket'),headers: {
-      'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
-      'Content-Type': 'application/json',
-      'Cookie': 'ci_session=3gnid18nsvll4u99839vfroba1ihd58t; csrfcookiei2help=4912ec8965916cc488eeb6aa70918fa7'
-    });
-
-print(response.statusCode);
-    if (response.statusCode == 200) {
-     setState(() {
-       AllTickets.clear();
-       print( response.body);
-       var jsonResponse = json.decode(response.body);
-       var JsonData = jsonResponse['data'];
-       AllTickets.addAll(JsonData);
-       AllTickets.forEach((element) {
-         ticket_data_filtered.add(element);
-         ticket_data_api_list.add(element);
-       });
-
-
-       //ticket_data_api_list.addAll(AllTickets);
-
-       print("ticket_data_filtered---------$ticket_data_filtered");
-
-       TotalTickesCount = AllTickets.length;
-       OpenCount =  ticket_data_api_list.where((element) => element['Status']=="O").length;
-       ClosedCount =  ticket_data_api_list.where((element) => element['Status']=="C").length;
-       PendingCount =  ticket_data_api_list.where((element) => element['Status']=="R").length;
-
-       print(AllTickets);
-     });
-
-    } else {
-      print(response.reasonPhrase);
-    }
-  }*/
   Future<void>_refresh() async {
-  return Future.delayed(Duration(seconds: 3));
+    RaedAllTickets(widget.loginModels[0].userRoll);
+    await Future.delayed(Duration(seconds: 2));
+
+
   }
 
 
@@ -670,7 +635,7 @@ print(response.statusCode);
         })
     );
 
-print(response.statusCode);
+
     if (response.statusCode == 200) {
      setState(() {
        AllTickets.clear();
@@ -682,7 +647,7 @@ print(response.statusCode);
          ticket_data_filtered.add(element);
          ticket_data_api_list.add(element);
        });
-
+       widget.TotalTicketCount(AllTickets);
 
        //ticket_data_api_list.addAll(AllTickets);
 
@@ -714,7 +679,7 @@ print(response.statusCode);
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return   Scaffold(
-      backgroundColor: MyColors.AppthemeColor,
+      backgroundColor: Colors.white,
       body:   ActiveScreen==true? Center(child: SpinKitThreeInOut(
 
         color: Colors.orange,
@@ -869,69 +834,64 @@ print(response.statusCode);
 
                       children: <Widget>[
                         RefreshIndicator(
-                          onRefresh:  _refresh,
-                          child: SingleChildScrollView(
-                            child: Container(
-                              width: size.width/1,
-                              height: size.height/1.3,
-                              color: Colors.white,
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    for (int i = 0; i < AllTickets.length; i++)
-                                      SingleChildScrollView(
-                                        child: Container(
+                          onRefresh: _refresh,
+                          child: Container(
+                            width: size.width/1,
+                            height: size.height/1,
+                           
+                            child: ListView.builder(
+                              itemCount: AllTickets.length,
+                              itemBuilder: (context, i) {
+                                return Container(
 
-                                          child: InkWell(
-                                            onTap: () {
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => TicketDeatils(AllTickets, i,widget.loginModels,  onBack: () async {
-                                                await RaedAllTickets(widget.loginModels[0].userRoll);
-                                              },),));
-                                            },
-                                            child: Card(
-                                              color: MyColors.AppthemeColor,
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(12),
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Column(
-                                                      children: [
-                                                        Text("Ticket No: " + AllTickets[i]['TicketNo'], style: GoogleFonts.quicksand(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),),
-                                                        Padding(
-                                                          padding: const EdgeInsets.only(left: 0),
-                                                          child: Container(
-                                                              padding: const EdgeInsets.only(left: 5),
-                                                              width: MediaQuery.of(context).size.width/2.6,
-                                                              child: Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.quicksand(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),)),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Column(
-                                                      children: [
-                                                        Container(
-                                                          width: 120,
-                                                          height: 30,
-                                                          decoration: BoxDecoration(color: AllTickets[i]['Status'] == "C" ? Colors.green.withOpacity(0.2) : AllTickets[i]['Status'] == "O" ? Colors.black.withOpacity(0.2) : Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(8))),
-                                                          child: Center(child: Text(AllTickets[i]['Status'] == "O" ? "Open" : AllTickets[i]['Status'] == "C" ? "Closed" : "Resolved", style: GoogleFonts.poppins(fontSize: 15, color: AllTickets[i]['Status'] == "C" ? Colors.lightGreenAccent : AllTickets[i]['Status'] == "O" ? Colors.yellow : Colors.blue, fontWeight: FontWeight.bold),)),
-                                                        )
-                                                      ],
-                                                    )
-                                                  ],
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => TicketDeatils(AllTickets, i,widget.loginModels,  onBack: () async {
+                                        await RaedAllTickets(widget.loginModels[0].userRoll);
+                                      },),));
+                                    },
+                                    child: Card(
+                                      color: MyColors.AppthemeColor,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Text("Ticket No: " + AllTickets[i]['TicketNo'], style: GoogleFonts.quicksand(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(left: 0),
+                                                  child: Container(
+                                                      padding: const EdgeInsets.only(left: 5),
+                                                      width: MediaQuery.of(context).size.width/2.6,
+                                                      child: Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.quicksand(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),)),
                                                 ),
-                                              ),
+                                              ],
                                             ),
-                                          ),
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  width: 120,
+                                                  height: 30,
+                                                  decoration: BoxDecoration(color: AllTickets[i]['Status'] == "C" ? Colors.green.withOpacity(0.2) : AllTickets[i]['Status'] == "O" ? Colors.black.withOpacity(0.2) : Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(8))),
+                                                  child: Center(child: Text(AllTickets[i]['Status'] == "O" ? "Open" : AllTickets[i]['Status'] == "C" ? "Closed" : "Resolved", style: GoogleFonts.poppins(fontSize: 15, color: AllTickets[i]['Status'] == "C" ? Colors.lightGreenAccent : AllTickets[i]['Status'] == "O" ? Colors.yellow : Colors.blue, fontWeight: FontWeight.bold),)),
+                                                )
+                                              ],
+                                            )
+                                          ],
                                         ),
                                       ),
-                                    SizedBox(height: 200,),
-                                  ],
-                                ),
-                              ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),
+                        
+
                         SingleChildScrollView(
                           child: Container(
                             width: size.width/1,
