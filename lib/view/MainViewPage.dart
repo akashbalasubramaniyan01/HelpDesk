@@ -14,6 +14,7 @@ import 'package:helpdesk/view/signin.dart';
 import '../model/LoginModel.dart';
 import 'ChatScreen.dart';
 import 'CreateTicket.dart';
+import 'TicketHomepage.dart';
 import 'TicketList.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
@@ -403,7 +404,7 @@ void initState() {
         appBar: AppBar(
           backgroundColor: const Color(0xFF21899C),
           //elevation: 1,
-          leading: Icon(Icons.sort,color: Colors.white),
+          leading: Icon(Icons.sort,color: Colors.white,size: 30,),
           actions: [
             InkWell(
               onTap: () {
@@ -428,26 +429,28 @@ void initState() {
             ),
             Container(width: 10,)
           ],
-          title:  Text.rich(
-            TextSpan(
-              style:TextStyle(  fontSize: 23.12,
-                color: Colors.white,
-                letterSpacing: 1.999999953855673,),
-              children: const [
-                TextSpan(
-                  text: 'HELP',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
+          title:  Center(
+            child: Text.rich(
+              TextSpan(
+                style:TextStyle(  fontSize: 23.12,
+                  color: Colors.white,
+                  letterSpacing: 1.999999953855673,),
+                children: const [
+                  TextSpan(
+                    text: 'I2',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-                TextSpan(
-                  text: ' DESK',
-                  style: TextStyle(
-                    color: Color(0xFFFE9879),
-                    fontWeight: FontWeight.w800,
+                  TextSpan(
+                    text: '  HELP',
+                    style: TextStyle(
+                      color: Color(0xFFFE9879),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -491,7 +494,7 @@ void initState() {
 
       ),
       body:  Scaffold(
-        backgroundColor:   const Color(0xFF21899C),
+       // backgroundColor:   const Color(0xFF21899C),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
 
@@ -504,7 +507,7 @@ void initState() {
 
                   width: size.width/1,
                   height: size.height,
-                  child: TicketPage(TicketCompanyCodeGet,widget.loginModels)),
+                  child: TicketHomePage(TicketCompanyCodeGet,widget.loginModels)),
             )
           else if(_page==1)
             Expanded(

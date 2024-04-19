@@ -19,6 +19,7 @@ import 'package:helpdesk/view/MainViewPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert' as convert;
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:helpdesk/view/TicketList.dart';
 import 'package:helpdesk/view/login.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:http/http.dart' as http;
@@ -31,9 +32,10 @@ class TicketDeatils extends StatefulWidget {
 
   var AllTickets;
   int i;
+  String TicketName;
   final VoidCallback onBack;
   final List<LoginModel> loginModels;
-   TicketDeatils(this.AllTickets,this.i,this.loginModels,{required this.onBack});
+   TicketDeatils(this.AllTickets,this.i,this.TicketName,this.loginModels,{required this.onBack});
 
   @override
   State<TicketDeatils> createState() => _TicketDeatilsState();
@@ -101,13 +103,13 @@ class _TicketDeatilsState extends State<TicketDeatils> {
               letterSpacing: 1.999999953855673,),
             children: const [
               TextSpan(
-                text: 'HELP',
+                text: '     I2',
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                 ),
               ),
               TextSpan(
-                text: ' DESK',
+                text: '  HELP',
                 style: TextStyle(
                   color: Color(0xFFFE9879),
                   fontWeight: FontWeight.w800,
@@ -852,7 +854,7 @@ class _TicketDeatilsState extends State<TicketDeatils> {
           widget.onBack();
           _timer = Timer.periodic(Duration(seconds: 2), (timer) {
             Navigator.pushReplacement(
-                context, CupertinoPageRoute(builder: (_) => MainPage(0,loginModels: widget.loginModels,)));
+                context, CupertinoPageRoute(builder: (_) => TicketPage(widget.loginModels,widget.TicketName)));
             ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
           });
 

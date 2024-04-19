@@ -10,15 +10,17 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:global_configuration/global_configuration.dart';
+import 'package:helpdesk/view/MainViewPage.dart';
 import 'package:http_auth/http_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../model/LoginModel.dart';
 import 'TicketDetails.dart';
 class TicketPage extends StatefulWidget {
-  Function TotalTicketCount;
+
   final List<LoginModel> loginModels;
-   TicketPage(this.TotalTicketCount,this.loginModels);
+  String TicketName;
+   TicketPage(this.loginModels,this.TicketName);
 
   @override
   State<TicketPage> createState() => _TicketPageState();
@@ -598,6 +600,7 @@ class _TicketPageState extends State<TicketPage> {
 
   }
   var AllTickets =[];
+  var ReadTickets =[];
   var OpenTickets =[];
   var searchFilterResult =[];
   var ticket_data_api_list =[];
@@ -642,23 +645,42 @@ class _TicketPageState extends State<TicketPage> {
        print( response.body);
        var jsonResponse = json.decode(response.body);
        var JsonData = jsonResponse['data'];
-       AllTickets.addAll(JsonData);
-       AllTickets.forEach((element) {
-         ticket_data_filtered.add(element);
-         ticket_data_api_list.add(element);
-       });
-       widget.TotalTicketCount(AllTickets);
 
-       //ticket_data_api_list.addAll(AllTickets);
+       ReadTickets.addAll(JsonData);
 
-       print("ticket_data_filtered---------$ticket_data_filtered");
+         if(widget.TicketName=="All") {
 
-       TotalTickesCount = AllTickets.length;
-       OpenCount =  ticket_data_api_list.where((element) => element['Status']=="O").length;
-       ClosedCount =  ticket_data_api_list.where((element) => element['Status']=="C").length;
-       PendingCount =  ticket_data_api_list.where((element) => element['Status']=="R").length;
-
-       print(AllTickets);
+          ReadTickets.forEach((element) {
+            ticket_data_filtered.add(element);
+            ticket_data_api_list.add(element);
+          });
+          print("ddddddddsssssssssssd");
+          AllTickets = ReadTickets;
+        }
+         else if(widget.TicketName=="Open") {
+          print("ddddddddsssssssssssd");
+         AllTickets = ReadTickets.where((element) => element['Status']=='O').toList();
+         ReadTickets.forEach((element) {
+           ticket_data_filtered.add(element);
+           ticket_data_api_list.add(element);
+         });
+       }
+         else if(widget.TicketName=="Pending") {
+          print("ddddddddsssssssssssd");
+         AllTickets = ReadTickets.where((element) => element['Status']=="R").toList();
+         ReadTickets.forEach((element) {
+           ticket_data_filtered.add(element);
+           ticket_data_api_list.add(element);
+         });
+       }
+         else if(widget.TicketName=="Closed") {
+          print("ddddddddsssssssssssd");
+         AllTickets = ReadTickets.where((element) => element['Status']=="C").toList();
+         ReadTickets.forEach((element) {
+           ticket_data_filtered.add(element);
+           ticket_data_api_list.add(element);
+         });
+       }
      });
 
     } else {
@@ -679,11 +701,45 @@ class _TicketPageState extends State<TicketPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return   Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF21899C),
+        //elevation: 1,
+        leading: InkWell(onTap: () {
+
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage(0,loginModels: widget.loginModels,),));
+          //Navigator.of(context).pop();
+        },child: Icon(Icons.arrow_back_ios,color: Colors.white)),
+
+        title:  Center(
+          child: Text.rich(
+            TextSpan(
+              style:TextStyle(  fontSize: 23.12,
+                color: Colors.white,
+                letterSpacing: 1.999999953855673,),
+              children:  [
+                TextSpan(
+                  text: 'I2',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextSpan(
+                  text: ' HELP         ',
+                  style: GoogleFonts.poppins(
+                    color: Color(0xFFFE9879),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       backgroundColor: Colors.white,
-      body:   ActiveScreen==true? Center(child: SpinKitThreeInOut(
+      body:   ActiveScreen==true? Center(child: SpinKitCircle(
 
         color: Colors.orange,
-        size: 30.0,
+        size: 45.0,
       )): Container(
             margin: const EdgeInsets.only(top: 0),
             decoration:  BoxDecoration(
@@ -696,8 +752,24 @@ class _TicketPageState extends State<TicketPage> {
           height: size.height/1,
           child: Column(
             children: [
+
+              Container(
+                width: MediaQuery.of(context).size.width/1,
+                decoration:  const BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 22,
+                  ),],
+
+                ),
+                child: Center(child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("${widget.TicketName} Ticket",style: GoogleFonts.poppins(fontSize: 18, color: MyColors.btnBorderColor, fontWeight: FontWeight.bold),),
+                )),
+              ),
               Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16, top: 15, bottom: 8),
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 3, bottom: 8),
                 child: Row(
                   children: <Widget>[
                     Expanded(
@@ -778,315 +850,62 @@ class _TicketPageState extends State<TicketPage> {
               ),
                 Expanded(
                   flex: 2,
-                  child: Container(
-                    width: size.width,
-                    height: size.height/1,
-                            child: DefaultTabController(
-                              initialIndex: 0,
-                              length: 4,
-                              child: Column(
-                                children: <Widget>[
-                  ButtonsTabBar(
+                  child:    RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: Container(
+                      width: size.width/1,
+                      height: size.height/1,
 
-                    onTap: (value) {
-                      print(value);
-                      if (value == 0) {
+                      child: ListView.builder(
+                        itemCount: AllTickets.length,
+                        itemBuilder: (context, i) {
+                          return Container(
 
-                        onFilterChanged("All");
-
-                      } else if (value == 1) {
-                        onFilterChanged("Open");
-                      } else if (value == 2) {
-                        onFilterChanged("Pending");
-                      } else if (value == 3) {
-                        onFilterChanged("Closed");
-                      }
-                      setState(() {
-                        tabBarValue = value;
-                      });
-                    },
-                    borderWidth: 1,
-                    unselectedBorderColor: Colors.white,
-                    borderColor: Colors.white,
-                    backgroundColor: Color(0xFFF56B3F),
-                    unselectedBackgroundColor: Colors.grey[300],
-                    unselectedLabelStyle: GoogleFonts.quicksand(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),
-                    labelStyle: GoogleFonts.quicksand(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
-                    tabs: [
-                      Tab(
-                        text: "      All  ${TotalTickesCount}    ",
-                      ),
-                      Tab(
-                        text: "    Open   ${OpenCount}  ",
-                      ),
-                      Tab(
-                        text: " Resolved $PendingCount ",
-                      ),
-                      Tab(
-                        text: " Closed $ClosedCount ",
-                      ),
-                    ],
-                  ),
-                           if(AllTickets.isNotEmpty)
-                           Expanded(
-                    flex: 1,
-                    child: TabBarView(
-
-                      children: <Widget>[
-                        RefreshIndicator(
-                          onRefresh: _refresh,
-                          child: Container(
-                            width: size.width/1,
-                            height: size.height/1,
-                           
-                            child: ListView.builder(
-                              itemCount: AllTickets.length,
-                              itemBuilder: (context, i) {
-                                return Container(
-
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => TicketDeatils(AllTickets, i,widget.loginModels,  onBack: () async {
-                                        await RaedAllTickets(widget.loginModels[0].userRoll);
-                                      },),));
-                                    },
-                                    child: Card(
-                                      color: MyColors.AppthemeColor,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Column(
-                                              children: [
-                                                Text("Ticket No: " + AllTickets[i]['TicketNo'], style: GoogleFonts.quicksand(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),),
-                                                Padding(
-                                                  padding: const EdgeInsets.only(left: 0),
-                                                  child: Container(
-                                                      padding: const EdgeInsets.only(left: 5),
-                                                      width: MediaQuery.of(context).size.width/2.6,
-                                                      child: Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.quicksand(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),)),
-                                                ),
-                                              ],
-                                            ),
-                                            Column(
-                                              children: [
-                                                Container(
-                                                  width: 120,
-                                                  height: 30,
-                                                  decoration: BoxDecoration(color: AllTickets[i]['Status'] == "C" ? Colors.green.withOpacity(0.2) : AllTickets[i]['Status'] == "O" ? Colors.black.withOpacity(0.2) : Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(8))),
-                                                  child: Center(child: Text(AllTickets[i]['Status'] == "O" ? "Open" : AllTickets[i]['Status'] == "C" ? "Closed" : "Resolved", style: GoogleFonts.poppins(fontSize: 15, color: AllTickets[i]['Status'] == "C" ? Colors.lightGreenAccent : AllTickets[i]['Status'] == "O" ? Colors.yellow : Colors.blue, fontWeight: FontWeight.bold),)),
-                                                )
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => TicketDeatils(AllTickets, i,widget.TicketName,widget.loginModels,  onBack: () async {
+                                  await RaedAllTickets(widget.loginModels[0].userRoll);
+                                },),));
                               },
-                            ),
-                          ),
-                        ),
-                        
-
-                        SingleChildScrollView(
-                          child: Container(
-                            width: size.width/1,
-                            height: size.height/1.3,
-                            color: Colors.white,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  for (int i = 0; i < AllTickets.length; i++)
-                                    SingleChildScrollView(
-                                      child: Container(
-
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => TicketDeatils(AllTickets, i,widget.loginModels,  onBack: () async {
-                                              await RaedAllTickets(widget.loginModels[0].userRoll);
-                                            },),));
-                                          },
-                                          child: Card(
-                                            color: MyColors.AppthemeColor,
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(12),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      Text("Ticket No: " + AllTickets[i]['TicketNo'], style: GoogleFonts.quicksand(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),),
-                                                      Padding(
-                                                        padding: const EdgeInsets.only(left: 0),
-                                                        child: Container(
-                                                            padding: const EdgeInsets.only(left: 5),
-                                                            width: MediaQuery.of(context).size.width/2.6,
-                                                            child: Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.quicksand(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Column(
-                                                    children: [
-                                                      Container(
-                                                        width: 120,
-                                                        height: 30,
-                                                        decoration: BoxDecoration(color: AllTickets[i]['Status'] == "C" ? Colors.green.withOpacity(0.2) : AllTickets[i]['Status'] == "O" ? Colors.black.withOpacity(0.2) : Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(8))),
-                                                        child: Center(child: Text(AllTickets[i]['Status'] == "O" ? "Open" : AllTickets[i]['Status'] == "C" ? "Closed" : "Resolved", style: GoogleFonts.poppins(fontSize: 15, color: AllTickets[i]['Status'] == "C" ? Colors.lightGreenAccent : AllTickets[i]['Status'] == "O" ? Colors.yellow : Colors.blue, fontWeight: FontWeight.bold),)),
-                                                      )
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                            ),
+                              child: Card(
+                                color: MyColors.AppthemeColor,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text("Ticket No: " + AllTickets[i]['TicketNo'], style: GoogleFonts.quicksand(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 0),
+                                            child: Container(
+                                                padding: const EdgeInsets.only(left: 5),
+                                                width: MediaQuery.of(context).size.width/2.6,
+                                                child: Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.quicksand(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),)),
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ),
-                                  SizedBox(height: 200,),
-                                ],
+                                      Column(
+                                        children: [
+                                          Container(
+                                            width: 120,
+                                            height: 30,
+                                            decoration: BoxDecoration(color: AllTickets[i]['Status'] == "C" ? Colors.green.withOpacity(0.2) : AllTickets[i]['Status'] == "O" ? Colors.black.withOpacity(0.2) : Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(8))),
+                                            child: Center(child: Text(AllTickets[i]['Status'] == "O" ? "Open" : AllTickets[i]['Status'] == "C" ? "Closed" : "Resolved", style: GoogleFonts.poppins(fontSize: 15, color: AllTickets[i]['Status'] == "C" ? Colors.lightGreenAccent : AllTickets[i]['Status'] == "O" ? Colors.yellow : Colors.blue, fontWeight: FontWeight.bold),)),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        SingleChildScrollView(
-                          child: Container(
-                            width: size.width/1,
-                            height: size.height/1.3,
-                            color: Colors.white,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  for (int i = 0; i < AllTickets.length; i++)
-                                    SingleChildScrollView(
-                                      child: Container(
-
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => TicketDeatils(AllTickets, i,widget.loginModels,  onBack: () async {
-                                              await RaedAllTickets(widget.loginModels[0].userRoll);
-                                            },),));
-                                          },
-                                          child: Card(
-                                            color: MyColors.AppthemeColor,
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(12),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      Text("Ticket No: " + AllTickets[i]['TicketNo'], style: GoogleFonts.quicksand(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),),
-                                                      Padding(
-                                                        padding: const EdgeInsets.only(left: 0),
-                                                        child: Container(
-                                                            padding: const EdgeInsets.only(left: 5),
-                                                            width: MediaQuery.of(context).size.width/2.6,
-                                                            child: Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.quicksand(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Column(
-                                                    children: [
-                                                      Container(
-                                                        width: 120,
-                                                        height: 30,
-                                                        decoration: BoxDecoration(color: AllTickets[i]['Status'] == "C" ? Colors.green.withOpacity(0.2) : AllTickets[i]['Status'] == "O" ? Colors.black.withOpacity(0.2) : Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(8))),
-                                                        child: Center(child: Text(AllTickets[i]['Status'] == "O" ? "Open" : AllTickets[i]['Status'] == "C" ? "Closed" : "Resolved", style: GoogleFonts.poppins(fontSize: 15, color: AllTickets[i]['Status'] == "C" ? Colors.lightGreenAccent : AllTickets[i]['Status'] == "O" ? Colors.yellow : Colors.blue, fontWeight: FontWeight.bold),)),
-                                                      )
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  SizedBox(height: 200,),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        SingleChildScrollView(
-                          child: Container(
-                            width: size.width/1,
-                            height: size.height/1.3,
-                            color: Colors.white,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  for (int i = 0; i < AllTickets.length; i++)
-                                    SingleChildScrollView(
-                                      child: Container(
-
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => TicketDeatils(AllTickets, i,widget.loginModels,  onBack: () async {
-                                              await RaedAllTickets(widget.loginModels[0].userRoll);
-                                            },),));
-                                          },
-                                          child: Card(
-                                            color: MyColors.AppthemeColor,
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(12),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      Text("Ticket No: " + AllTickets[i]['TicketNo'], style: GoogleFonts.quicksand(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),),
-                                                      Padding(
-                                                        padding: const EdgeInsets.only(left: 0),
-                                                        child: Container(
-                                                            padding: const EdgeInsets.only(left: 5),
-                                                            width: MediaQuery.of(context).size.width/2.6,
-                                                            child: Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.quicksand(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Column(
-                                                    children: [
-                                                      Container(
-                                                        width: 120,
-                                                        height: 30,
-                                                        decoration: BoxDecoration(color: AllTickets[i]['Status'] == "C" ? Colors.green.withOpacity(0.2) : AllTickets[i]['Status'] == "O" ? Colors.black.withOpacity(0.2) : Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(8))),
-                                                        child: Center(child: Text(AllTickets[i]['Status'] == "O" ? "Open" : AllTickets[i]['Status'] == "C" ? "Closed" : "Resolved", style: GoogleFonts.poppins(fontSize: 15, color: AllTickets[i]['Status'] == "C" ? Colors.lightGreenAccent : AllTickets[i]['Status'] == "O" ? Colors.yellow : Colors.blue, fontWeight: FontWeight.bold),)),
-                                                      )
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  SizedBox(height: 200,),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      ],
+                          );
+                        },
+                      ),
                     ),
-                  )
-                                  else
-                             Padding(
-                               padding: const EdgeInsets.only(top: 80),
-                               child: Center(child: Text("No Record Found!!!", style: GoogleFonts.poppins(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),)),
-                             ),
-                                ],
-                              ),
-                            ),
                   ),
                 ),
 
@@ -1097,8 +916,10 @@ class _TicketPageState extends State<TicketPage> {
   }
   onSearchTextChanged(String text) async {
 
+  setState(() {
     AllTickets.clear();
     searchResult.clear();
+  });
     setState(() {
       print("text$text");
       if (text.isEmpty) {
@@ -1113,7 +934,7 @@ class _TicketPageState extends State<TicketPage> {
 
       print("ticket_data_filtered00$ticket_data_filtered");
       ticket_data_filtered.forEach((Detail) {
-        if (Detail['TicketNo'].toString().toLowerCase().contains(text.toLowerCase()) )
+        if (Detail['TicketNo'].toString().toLowerCase().contains(text.toLowerCase()))
           searchResult.add(Detail);
         print("searchResult$searchResult");
 
@@ -1126,46 +947,6 @@ class _TicketPageState extends State<TicketPage> {
       });
     });
   }
-  onFilterChanged(text) async {
 
-    setState(() {
-      searchFilterResult.clear();
-      AllTickets.clear();
-    });
-    {
-      print("ticket_data_api_list $ticket_data_api_list");
-      ticket_data_api_list.forEach((Detail) {
-
-        if (text=="All") { // Corrected from 'Detail['0']' to 'Detail['Status']'
-          print("sdjhfjs $Detail");
-          searchFilterResult.add(Detail);
-          print("searchFilterResult$searchFilterResult");
-        }
-        if (Detail['Status'] == "O"&&text=="Open") { // Corrected from 'Detail['0']' to 'Detail['Status']'
-          print("sdjhfjs $Detail");
-          searchFilterResult.add(Detail);
-          print("searchFilterResult$searchFilterResult");
-        }
-        if (Detail['Status'] == "C"&&text=="Closed") { // Corrected from 'Detail['0']' to 'Detail['Status']'
-          print("sdjhfjs $Detail");
-          searchFilterResult.add(Detail);
-          print("searchFilterResult$searchFilterResult");
-        }
-        if (Detail['Status'] == "R"&&text=="Pending") { // Corrected from 'Detail['0']' to 'Detail['Status']'
-
-          searchFilterResult.add(Detail);
-
-        }
-      });
-
-      setState(() {
-        ticket_data_filtered.clear();
-        searchFilterResult.forEach((searchData) {
-          ticket_data_filtered.add(searchData);
-        });
-      });
-      onSearchTextChanged(SearchText.text);
-    }
-  }
 
 }

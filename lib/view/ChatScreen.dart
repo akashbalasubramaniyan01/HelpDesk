@@ -88,24 +88,23 @@ class _ChatPageState extends State<ChatPage> {
         //elevation: 1,
         leading: InkWell(onTap: () {
 
-
           Navigator.of(context).pop();
         },child: Icon(Icons.arrow_back_ios,color: Colors.white)),
 
-        title:  Text.rich(
+        title:   Text.rich(
           TextSpan(
             style:TextStyle(  fontSize: 23.12,
               color: Colors.white,
               letterSpacing: 1.999999953855673,),
             children: const [
               TextSpan(
-                text: '     HELP',
+                text: '        I2',
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                 ),
               ),
               TextSpan(
-                text: ' DESK',
+                text: '  HELP',
                 style: TextStyle(
                   color: Color(0xFFFE9879),
                   fontWeight: FontWeight.w800,
@@ -211,7 +210,9 @@ width: MediaQuery.of(
                                 ),
                                 child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                    CrossAxisAlignment.end,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+
                                     children: [
                                       Container(
                                           width: MediaQuery.of(context).size.width /1.8,
@@ -223,7 +224,7 @@ width: MediaQuery.of(
                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                 children: [
                                                   Text(dataList[i][0], style: GoogleFonts.poppins(fontSize: 15, color: i % 2 == 0 ?Colors.white: Colors.black, fontWeight: FontWeight.w600)),
-                                                  const SizedBox(height: 12),
+
                                                   //Text(dataList[i][2], style: GoogleFonts.poppins(color: Colors.white)),
                                                   // const SizedBox(height: 8),
                                                   //  Text(dataList[i][1], style: GoogleFonts.poppins(color: Colors.white)),
@@ -231,19 +232,20 @@ width: MediaQuery.of(
                                                 ],
                                               ),
                                             ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(top: 15),
-                                              child: Text(
-                                                DateFormat('dd/MM/yyyy').format(DateTime.parse(dataList[i][1]),),
-                                                style: GoogleFonts.poppins(
-                                                  fontSize: 13,
-                                                  color: i % 2 == 0 ?Colors.white: Colors.black,
-                                                ),
-                                              ),
-                                            ),
+
 
                                           ],
                                           )),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 6),
+                                        child: Text(
+                                          DateFormat('dd/MM/yyyy').format(DateTime.parse(dataList[i][1]),),
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 13,
+                                            color: i % 2 == 0 ?Colors.white: Colors.black,
+                                          ),
+                                        ),
+                                      ),
                                     ]))
                         );
                       }),

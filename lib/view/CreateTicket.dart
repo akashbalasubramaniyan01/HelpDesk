@@ -63,7 +63,7 @@ print(companies);
 
   }
 
-  NewTickets(String Username, String Desc, String issuecode, String issuedetails, String issuevalsue, String issuetype,String dateInput) async {
+  NewTickets(String Username, String Desc, String issuecode, String issuedetails, String issuevalsue, String issuetype,String dateInput,String CompanyCode) async {
     DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
 
     try{
@@ -77,7 +77,7 @@ print(companies);
           "priority":issuevalsue,
           "details": issuedetails,
           "usrname": Username,
-          "ccode": issuecode
+          "ccode": CompanyCode
         }),
 
         headers:   {
@@ -124,11 +124,10 @@ print(companies);
             actions: const [SizedBox.shrink()],
           );
 
-        setState(() {
           ScaffoldMessenger.of(context)
-            ..hideCurrentMaterialBanner()
+            ..clearSnackBars()
             ..showMaterialBanner(materialBanner);
-        });
+
 
           Navigator.pushReplacement(
               context, CupertinoPageRoute(builder: (_) => MainPage(0, loginModels:widget.loginModels,)));
@@ -172,7 +171,7 @@ print(companies);
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(child:  Text("Create Ticket",style: GoogleFonts.poppins( fontSize: 25.0,
-                    color: Colors.orange,
+                    color: MyColors.btnBorderColor,
                     fontWeight: FontWeight.bold,),)),
                 ),
               ),
@@ -566,7 +565,13 @@ crossAxisAlignment: CrossAxisAlignment.start,
                             ),
                           ),
                         ),
-                        Container(height: 5,),
+
+
+
+                        Text(IssueAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
+                          color: Colors.red,
+                          fontWeight: FontWeight.w800,),),
+
                         Text("  Select Company Code",style:GoogleFonts.poppins( fontSize: 14.0,
                           color: Colors.black,
                           fontWeight: FontWeight.w400,),),
@@ -613,84 +618,6 @@ crossAxisAlignment: CrossAxisAlignment.start,
                             ),
                           ),
                         ),
-
-                        Text(IssueAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w800,),),
-
-                        Container(
-                          alignment: Alignment.center,
-                          height: size.height / 12,
-
-                          //margin: const EdgeInsets.only(left: 5,right: 5),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              color:  Colors.white,
-
-                              boxShadow: [new BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 7,
-                              ),]
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0,),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                //mail icon
-                                Icon(CupertinoIcons.decrease_indent),
-                                const SizedBox(
-                                  width: 16,
-                                ),
-
-                                //divider svg
-                                SvgPicture.string(
-                                  '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
-                                  width: 1.0,
-                                  height: 15.5,
-                                  color: Colors.black87,
-                                ),
-                                const SizedBox(
-                                  width: 16,
-                                ),
-
-                                //email address textField
-                                Expanded(
-                                  flex: 1,
-                                  child: TextField(
-                                    enabled: false,
-                                    controller: issuecode,
-                                    maxLines: 1,
-                                    onChanged: (value) {
-                                      if(value.isNotEmpty){
-                                        setState(() {
-                                          CodeAllert = "";
-                                        });
-                                      }
-                                    },
-                                    cursorColor: Colors.black87,
-                                    keyboardType: TextInputType.emailAddress,
-                                    style: TextStyle(   fontSize: 14.0,
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w500,),
-                                    decoration: InputDecoration(
-                                        hintText: "Enter Issue code",
-
-                                        hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.w800,),
-                                        border: InputBorder.none),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-
-                        Text(CodeAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w800,),),
                         Container(height: 15,),
 
                         Container(
@@ -715,7 +642,7 @@ crossAxisAlignment: CrossAxisAlignment.start,
                               }
                               else{
 
-                                NewTickets(username.text,Description.text,issuecode.text,issuedetails.text,dropdownvalue,pvalue,DatetimeController.text);
+                                NewTickets(username.text,Description.text,issuecode.text,issuedetails.text,dropdownvalue,pvalue,DatetimeController.text,CompanyCode);
 
                               }
 

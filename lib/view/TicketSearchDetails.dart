@@ -611,10 +611,17 @@ class _TicketSearchState extends State<TicketSearch> {
   int TotalTickesCount = 0;
   List searchResult = [];
 
+bool ActivePage = true;
 
+  Future<void>_refresh() async {
+    RaedAllTickets();
+    await Future.delayed(Duration(seconds: 2));
 
-
+  }
   void RaedAllTickets() async {
+    setState(() {
+      ActivePage = true;
+    });
     var client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
 
     var response = await client.put(Uri.parse('${GlobalConfiguration().get("ApiURl")}apihelpdesk'),headers: {
@@ -657,6 +664,9 @@ class _TicketSearchState extends State<TicketSearch> {
     } else {
       print(response.reasonPhrase);
     }
+    setState(() {
+      ActivePage = false;
+    });
   }
   @override
   void initState() {
@@ -668,7 +678,11 @@ class _TicketSearchState extends State<TicketSearch> {
     final size = MediaQuery.of(context).size;
     return   Scaffold(
 
-      body:      Column(
+      body:    ActivePage==true? Center(child: SpinKitCircle(
+
+        color: Colors.orange,
+        size: 46.0,
+      )): Column(
         children: [
 
           Container(
@@ -681,79 +695,72 @@ class _TicketSearchState extends State<TicketSearch> {
                 ),]),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Center(child:  Text("Ticket Comment Status",style: GoogleFonts.poppins( fontSize: 23.0,
-                color: Colors.orange,
+              child: Center(child:  Text("Ticket Comment Status",style: GoogleFonts.poppins( fontSize: 18.0,
+                color: MyColors.btnBorderColor,
                 fontWeight: FontWeight.bold,),)),
             ),
           ),
           if(AllTickets.isNotEmpty)
 
-            SingleChildScrollView(
-              child: Container(
-                width: size.width/1,
-                height: size.height/1.3,
+    RefreshIndicator(
+      onRefresh: _refresh,
+      child: Container(
+        width: size.width/1,
+        height: size.height/1.4,
+        child: ListView.builder(
+          itemCount: AllTickets.length,
+          itemBuilder: (context, i) {
+            return Container(
+              margin: EdgeInsets.only(top: 5,bottom: 5),
+              decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black12,blurRadius: 12)],color: Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(0))),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Ticket No: " + AllTickets[i]['TicketNo'], style: GoogleFonts.poppins(fontSize: 15, color: MyColors.AppthemeColor,fontWeight: FontWeight.bold),),
+                        Container(height: 7,),
+                        Container(
+                            width: size.width/2.5,
+                            child: Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.poppins(fontSize: 12, color: MyColors.AppthemeColor, fontWeight: FontWeight.w700),)),
 
-                color: Colors.white,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      for (int i = 0; i < AllTickets.length; i++)
-                        SingleChildScrollView(
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(widget.loginModels,AllTickets[i]['TicketNo'],AllTickets[i]['ShortText']),));
+
+                          },
                           child: Container(
-                            color: Colors.white,
-                          //  decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black38,blurRadius: 12)],color: Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(13))),
-                            child: InkWell(
-
-                              child: Card(
-                                color: Colors.white,
-                                elevation: 4,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text("Ticket No: " + AllTickets[i]['TicketNo'], style: GoogleFonts.poppins(fontSize: 15, color: MyColors.AppthemeColor,fontWeight: FontWeight.bold),),
-                                         Container(height: 7,),
-                                          Text(AllTickets[i]['ShortText'].toString(), style: GoogleFonts.poppins(fontSize: 14, color: MyColors.AppthemeColor, fontWeight: FontWeight.w600),),
-
-                                        ],
-                                      ),
-                                      Column(
-                                        children: [
-                                          InkWell(
-                                            onTap: () {
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(widget.loginModels,AllTickets[i]['TicketNo'],AllTickets[i]['ShortText']),));
-
-                                            },
-                                            child: Container(
-                                              width: 120,
-                                              height: 30,
-                                              decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black38,blurRadius: 4)],color: Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(13))),
-                                              child: Center(child: Text("Commant", style: GoogleFonts.poppins(fontSize: 15, color:  MyColors.AppthemeColor, fontWeight: FontWeight.bold),)),
-                                            ),
-                                          )
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
+                            width: 120,
+                            height: 30,
+                            decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black38,blurRadius: 4)],color: Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(13))),
+                            child: Center(child: Text("Commant", style: GoogleFonts.poppins(fontSize: 15, color:  MyColors.AppthemeColor, fontWeight: FontWeight.bold),)),
                           ),
-                        ),
-                      SizedBox(height: 200,),
-                    ],
-                  ),
+                        )
+                      ],
+                    )
+                  ],
                 ),
               ),
-            )
+            );
+
+          },
+        ),
+      ),
+    )
           else
-            Center(child: Text("No Record Found!!!", style: GoogleFonts.poppins(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),)),
+            Padding(
+              padding: const EdgeInsets.only(top: 80),
+              child: Center(child: Text("No Record Found!!!", style: GoogleFonts.poppins(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),)),
+            ),
 
         ],),
     );
