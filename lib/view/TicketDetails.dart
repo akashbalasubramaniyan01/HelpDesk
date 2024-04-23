@@ -15,6 +15,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:helpdesk/utils/colors.dart';
+import 'package:helpdesk/view/ChatScreen.dart';
 import 'package:helpdesk/view/MainViewPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert' as convert;
@@ -131,10 +132,42 @@ class _TicketDeatilsState extends State<TicketDeatils> {
              child:  Padding(
                padding: const EdgeInsets.all(16),
                child: Center(
-                 child: Text(
-                   'Ticket Details ${widget.AllTickets[widget.i]['TicketNo']}',
-                   style:  GoogleFonts.poppins(fontWeight: FontWeight.bold,color:Colors.cyan,fontSize:20),
+                 child: Row(
+                   mainAxisAlignment: MainAxisAlignment.center,
+                   children: [
+                     Text(
+                       'Ticket Details: ${widget.AllTickets[widget.i]['TicketNo']}',
+                       style:  GoogleFonts.poppins(fontWeight: FontWeight.bold,color:Colors.cyan,fontSize:16),
 
+                     ),
+                     Container(width: 25,),
+                     InkWell(
+
+                       onTap: () {
+
+                          Navigator.pushReplacement(
+    context, CupertinoPageRoute(builder: (_) =>  ChatPage(widget.loginModels, widget.AllTickets[widget.i]['TicketNo'], widget.AllTickets[widget.i]['ShortText'])));
+
+                       },
+                       child: Container(
+                         alignment: Alignment.center,
+                         height: size.height / 25,
+                         decoration: BoxDecoration(
+                           borderRadius: BorderRadius.circular(10.0),
+                           color: const Color(0xFFF56B3F),
+                         ),
+                         child: InkWell(
+
+                           child: Text(
+                               '     View     ',
+                               style: GoogleFonts.poppins( fontSize: 16.0,
+                                 color: Colors.white,
+                                 fontWeight: FontWeight.w800,)
+                           ),
+                         ),
+                       ),
+                     )
+                   ],
                  ),
                ),
              ),

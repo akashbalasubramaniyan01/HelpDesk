@@ -648,11 +648,6 @@ bool ActivePage = true;
           ticket_data_api_list.add(element);
         });
 
-
-        //ticket_data_api_list.addAll(AllTickets);
-
-        print("ticket_data_filtered---------$ticket_data_filtered");
-
         TotalTickesCount = AllTickets.length;
         OpenCount =  ticket_data_api_list.where((element) => element['Status']=="O").length;
         ClosedCount =  ticket_data_api_list.where((element) => element['Status']=="C").length;
@@ -742,7 +737,7 @@ bool ActivePage = true;
                             width: 120,
                             height: 30,
                             decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black38,blurRadius: 4)],color: Colors.white, borderRadius: const BorderRadiusDirectional.all(Radius.circular(13))),
-                            child: Center(child: Text("Commant", style: GoogleFonts.poppins(fontSize: 15, color:  MyColors.AppthemeColor, fontWeight: FontWeight.bold),)),
+                            child: Center(child: Text("Comment", style: GoogleFonts.poppins(fontSize: 15, color:  MyColors.AppthemeColor, fontWeight: FontWeight.bold),)),
                           ),
                         )
                       ],

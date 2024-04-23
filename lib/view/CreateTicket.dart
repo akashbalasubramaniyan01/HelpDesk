@@ -1,5 +1,5 @@
 
-
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,12 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../model/LoginModel.dart';
 import 'MainViewPage.dart';
-import 'TicketDetails.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../utils/colors.dart';
-import 'package:intl/intl.dart';
+
 class CreateTicket extends StatefulWidget {
   final List<LoginModel> loginModels;
   var AllCompanyList;
@@ -62,7 +57,7 @@ print(companies);
 
 
   }
-
+int CountTicketBadge =0;
   NewTickets(String Username, String Desc, String issuecode, String issuedetails, String issuevalsue, String issuetype,String dateInput,String CompanyCode) async {
     DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
 
@@ -105,6 +100,7 @@ print(companies);
           CreateTicketbool = false;
           var jsonResponse = json.decode(response.body);
           print(jsonResponse);
+         int value =  CountTicketBadge++;
 
           final materialBanner = MaterialBanner(
             /// need to set following properties for best effect of awesome_snackbar_content
@@ -685,4 +681,6 @@ crossAxisAlignment: CrossAxisAlignment.start,
       ),
     );
   }
+
+
 }
