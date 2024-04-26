@@ -1,5 +1,5 @@
 
-
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,15 +13,13 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:http_auth/http_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../model/LoginModel.dart';
 import 'MainViewPage.dart';
-import 'TicketDetails.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../utils/colors.dart';
-import 'package:intl/intl.dart';
+
 class CreateTicket extends StatefulWidget {
-  const CreateTicket({Key? key}) : super(key: key);
+  final List<LoginModel> loginModels;
+  var AllCompanyList;
+   CreateTicket(this.loginModels,this.AllCompanyList);
 
   @override
   State<CreateTicket> createState() => _CreateTicketState();
@@ -41,18 +39,67 @@ class _CreateTicketState extends State<CreateTicket> {
   String UserNameAllert = "";
   String CodeAllert = "";
   String dropdownvalue = 'Moderate';
+  String CompanyCode = '4P';
   String pvalue = 'Hardware Failure';
   var items =  ['Moderate','Critical','High','Low'];
+  var CompanyCodeValues =  [];
   var itemsissue =  ['Hardware Failure','Network/ WiFi Issue','Printer Problem','E-Mail Issue','Office 365','CCTV','Software Issue','Other'];
   void _getDateAndTime() {
     DateTime now = DateTime.now();
     String formattedDate = '${now.day}-${(now.month)}-${(now.year)}';
     String formattedTime = '${(now.hour)}:${(now.minute)}';
     DatetimeController.text = formattedDate+" "+ formattedTime;
+    issuecode.text = widget.loginModels[0].company;
+
+ /*   var companies = widget.AllCompanyList.map((ticket) => ticket['Company']).toList();
+      print(companies);
+    CompanyCodeValues = widget.AllCompanyList.map((ticket) => ticket['Company']).toSet().toList();
+*/
 
   }
+int CountTicketBadge =0;
+  Map<String, dynamic> JsonDatas = {
 
-  NewTickets(String Username, String Desc, String issuecode, String issuedetails, String issuevalsue, String issuetype,String dateInput) async {
+  };
+  ComapnyListData() async {
+
+
+    var client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
+    var Url;
+
+      Url = '${GlobalConfiguration().get("ApiURl")}apilistofcompany';
+
+
+    var response = await client.get(Uri.parse(Url),headers: {
+      'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+      'Content-Type': 'application/json',
+      'Cookie': 'ci_session=3gnid18nsvll4u99839vfroba1ihd58t; csrfcookiei2help=4912ec8965916cc488eeb6aa70918fa7'
+    },
+
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        var jsonResponse = json.decode(response.body);
+        var JsonData = jsonResponse['data'];
+        print(JsonData);
+        JsonDatas =JsonData;
+
+      });
+
+
+    } else {
+      print(response.reasonPhrase);
+    }
+    setState(() {
+      // ActiveScreen=false;
+    });
+  }
+
+
+
+
+  NewTickets(String Username, String Desc, String issuecode, String issuedetails, String issuevalsue, String issuetype,String dateInput,String CompanyCode) async {
     DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
 
     try{
@@ -66,7 +113,7 @@ class _CreateTicketState extends State<CreateTicket> {
           "priority":issuevalsue,
           "details": issuedetails,
           "usrname": Username,
-          "ccode": issuecode
+          "ccode": CompanyCode
         }),
 
         headers:   {
@@ -94,10 +141,11 @@ class _CreateTicketState extends State<CreateTicket> {
           CreateTicketbool = false;
           var jsonResponse = json.decode(response.body);
           print(jsonResponse);
+         int value =  CountTicketBadge++;
 
           final materialBanner = MaterialBanner(
             /// need to set following properties for best effect of awesome_snackbar_content
-            elevation: 2,
+            elevation: 0,
             backgroundColor: Colors.transparent,
             forceActionsBelow: false,
             content: AwesomeSnackbarContent(
@@ -114,15 +162,14 @@ class _CreateTicketState extends State<CreateTicket> {
           );
 
           ScaffoldMessenger.of(context)
-            ..hideCurrentMaterialBanner()
+            ..clearSnackBars()
             ..showMaterialBanner(materialBanner);
-          Future.delayed(const Duration(seconds: 1), () {
-            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-          });
+
+
           Navigator.pushReplacement(
-              context, CupertinoPageRoute(builder: (_) => MainPage(0)));
+              context, CupertinoPageRoute(builder: (_) => MainPage(0, loginModels:widget.loginModels,)));
 
-
+          ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
 
 
         }); }
@@ -138,14 +185,17 @@ class _CreateTicketState extends State<CreateTicket> {
   void initState() {
     // TODO: implement initState
     _getDateAndTime();
+    ComapnyListData();
   }
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return  SingleChildScrollView(
       child: Container(
+
         //height: MediaQuery.of(context).size.height * 0.77,
         child: SingleChildScrollView(
           child: Column(
+
             children:[
             Container(height: 20,),
               Container(
@@ -159,7 +209,7 @@ class _CreateTicketState extends State<CreateTicket> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(child:  Text("Create Ticket",style: GoogleFonts.poppins( fontSize: 25.0,
-                    color: MyColors.AppthemeColor,
+                    color: MyColors.btnBorderColor,
                     fontWeight: FontWeight.bold,),)),
                 ),
               ),
@@ -169,7 +219,7 @@ class _CreateTicketState extends State<CreateTicket> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
-
+crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Container(height: 15,),
                         Container(
@@ -555,15 +605,20 @@ class _CreateTicketState extends State<CreateTicket> {
                         ),
 
 
+
                         Text(IssueAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
                           color: Colors.red,
                           fontWeight: FontWeight.w800,),),
 
+                        Text("  Select Company Name",style:GoogleFonts.poppins( fontSize: 14.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400,),),
+                        Container(height: 5,),
+                        if(JsonDatas.isNotEmpty)
                         Container(
-                          alignment: Alignment.center,
-                          height: size.height / 12,
-
-                          //margin: const EdgeInsets.only(left: 5,right: 5),
+                          width: size.width,
+                          height: 50,
+                          padding: EdgeInsets.all(5.0),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                               color:  Colors.white,
@@ -571,66 +626,31 @@ class _CreateTicketState extends State<CreateTicket> {
                               boxShadow: [new BoxShadow(
                                 color: Colors.black26,
                                 blurRadius: 7,
-                              ),]
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0,),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                //mail icon
-                                Icon(CupertinoIcons.decrease_indent),
-                                const SizedBox(
-                                  width: 16,
-                                ),
+                              ),]   ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              elevation: 0,
+                              value: CompanyCode,
 
-                                //divider svg
-                                SvgPicture.string(
-                                  '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
-                                  width: 1.0,
-                                  height: 15.5,
-                                  color: Colors.black87,
-                                ),
-                                const SizedBox(
-                                  width: 16,
-                                ),
+                              icon: Icon(Icons.keyboard_arrow_down),
 
-                                //email address textField
-                                Expanded(
-                                  flex: 1,
-                                  child: TextField(
-                                    controller: issuecode,
-                                    maxLines: 1,
-                                    onChanged: (value) {
-                                      if(value.isNotEmpty){
-                                        setState(() {
-                                          CodeAllert = "";
-                                        });
-                                      }
-                                    },
-                                    cursorColor: Colors.black87,
-                                    keyboardType: TextInputType.emailAddress,
-                                    style: TextStyle(   fontSize: 14.0,
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w500,),
-                                    decoration: InputDecoration(
-                                        hintText: "Enter Issue code",
+                              items:JsonDatas.entries.map((MapEntry<String, dynamic> entry) {
+                                return DropdownMenuItem<String>(
+                                  value: entry.key,
+                                  child: Text(entry.value),
+                                );
+                              }).toList(),
 
-                                        hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.w800,),
-                                        border: InputBorder.none),
-                                  ),
-                                ),
-                              ],
+                              onChanged:  (value) {
+
+                                setState(() {
+                                  CompanyCode = value.toString();
+                                });
+                              },
+
                             ),
                           ),
                         ),
-
-
-                        Text(CodeAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w800,),),
                         Container(height: 15,),
 
                         Container(
@@ -655,7 +675,7 @@ class _CreateTicketState extends State<CreateTicket> {
                               }
                               else{
 
-                                NewTickets(username.text,Description.text,issuecode.text,issuedetails.text,dropdownvalue,pvalue,DatetimeController.text);
+                                NewTickets(username.text,Description.text,issuecode.text,issuedetails.text,dropdownvalue,pvalue,DatetimeController.text,CompanyCode);
 
                               }
 
@@ -667,11 +687,20 @@ class _CreateTicketState extends State<CreateTicket> {
                               color: Colors.white,
                               size: 50.0,
                             )
-                            ) :Text(
-                                'Create Ticket',
-                                style: GoogleFonts.poppins( fontSize: 25.0,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,)
+                            ) :Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(CupertinoIcons.add,color: Colors.white,),
+                                  Container(width: 8,),
+                                  Text(
+                                      'Create Ticket',
+                                      style: GoogleFonts.poppins( fontSize: 25.0,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w800,)
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -689,4 +718,6 @@ class _CreateTicketState extends State<CreateTicket> {
       ),
     );
   }
+
+
 }

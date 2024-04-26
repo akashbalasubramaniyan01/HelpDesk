@@ -15,10 +15,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:helpdesk/utils/colors.dart';
+import 'package:helpdesk/view/ChatScreen.dart';
 import 'package:helpdesk/view/MainViewPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert' as convert;
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:helpdesk/view/TicketList.dart';
 import 'package:helpdesk/view/login.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:http/http.dart' as http;
@@ -31,8 +33,10 @@ class TicketDeatils extends StatefulWidget {
 
   var AllTickets;
   int i;
+  String TicketName;
   final VoidCallback onBack;
-   TicketDeatils(this.AllTickets,this.i,{required this.onBack});
+  final List<LoginModel> loginModels;
+   TicketDeatils(this.AllTickets,this.i,this.TicketName,this.loginModels,{required this.onBack});
 
   @override
   State<TicketDeatils> createState() => _TicketDeatilsState();
@@ -100,13 +104,13 @@ class _TicketDeatilsState extends State<TicketDeatils> {
               letterSpacing: 1.999999953855673,),
             children: const [
               TextSpan(
-                text: 'HELP',
+                text: '     I2',
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                 ),
               ),
               TextSpan(
-                text: ' DESK',
+                text: '  HELP',
                 style: TextStyle(
                   color: Color(0xFFFE9879),
                   fontWeight: FontWeight.w800,
@@ -128,10 +132,42 @@ class _TicketDeatilsState extends State<TicketDeatils> {
              child:  Padding(
                padding: const EdgeInsets.all(16),
                child: Center(
-                 child: Text(
-                   'Ticket Details ${widget.AllTickets[widget.i]['TicketNo']}',
-                   style:  GoogleFonts.poppins(fontWeight: FontWeight.bold,color:Colors.cyan,fontSize:20),
+                 child: Row(
+                   mainAxisAlignment: MainAxisAlignment.center,
+                   children: [
+                     Text(
+                       'Ticket Details: ${widget.AllTickets[widget.i]['TicketNo']}',
+                       style:  GoogleFonts.poppins(fontWeight: FontWeight.bold,color:Colors.cyan,fontSize:16),
 
+                     ),
+                     Container(width: 25,),
+                     InkWell(
+
+                       onTap: () {
+
+                          Navigator.pushReplacement(
+    context, CupertinoPageRoute(builder: (_) =>  ChatPage(widget.loginModels, widget.AllTickets[widget.i]['TicketNo'], widget.AllTickets[widget.i]['ShortText'])));
+
+                       },
+                       child: Container(
+                         alignment: Alignment.center,
+                         height: size.height / 25,
+                         decoration: BoxDecoration(
+                           borderRadius: BorderRadius.circular(10.0),
+                           color: const Color(0xFFF56B3F),
+                         ),
+                         child: InkWell(
+
+                           child: Text(
+                               '     View     ',
+                               style: GoogleFonts.poppins( fontSize: 16.0,
+                                 color: Colors.white,
+                                 fontWeight: FontWeight.w800,)
+                           ),
+                         ),
+                       ),
+                     )
+                   ],
                  ),
                ),
              ),
@@ -221,13 +257,13 @@ class _TicketDeatilsState extends State<TicketDeatils> {
                                       ),
                                     ),
                                     Container(
-
+   width: 200,
                                       child:
                                       Text.rich(
                                         TextSpan(
                                             children: [
                                               TextSpan(text: ": ", style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.black)),
-                                              TextSpan(text: widget.AllTickets[widget.i]['ShortText'], style: GoogleFonts.poppins(color: Colors.black,fontWeight:FontWeight.bold))
+                                              TextSpan(text: widget.AllTickets[widget.i]['ShortText'], style: GoogleFonts.poppins(color: Colors.black,fontWeight:FontWeight.bold,))
                                             ]),
                                       ),
                                     )
@@ -416,7 +452,7 @@ class _TicketDeatilsState extends State<TicketDeatils> {
                                         TextSpan(
                                             children: [
                                               TextSpan(text: ": ", style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.black)),
-                                              TextSpan(text: widget.AllTickets[widget.i]['Status'], style:GoogleFonts.poppins(color: Colors.black,fontWeight:FontWeight.bold))
+                                              TextSpan(text: widget.AllTickets[widget.i]['Status']=="O"?"Open":widget.AllTickets[widget.i]['Status']=="C"?"Closed":"Resolved", style:GoogleFonts.poppins(color: Colors.black,fontWeight:FontWeight.bold))
                                             ]),
                                       ),
                                     )
@@ -851,7 +887,7 @@ class _TicketDeatilsState extends State<TicketDeatils> {
           widget.onBack();
           _timer = Timer.periodic(Duration(seconds: 2), (timer) {
             Navigator.pushReplacement(
-                context, CupertinoPageRoute(builder: (_) => MainPage(0)));
+                context, CupertinoPageRoute(builder: (_) => TicketPage(widget.loginModels,widget.TicketName)));
             ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
           });
 
