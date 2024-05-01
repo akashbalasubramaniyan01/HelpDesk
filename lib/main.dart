@@ -42,6 +42,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'config/axpertAppSettings.dart';
 import 'model/LoginModel.dart';
+
 class MyHttpOverrides extends HttpOverrides{
   @override
   HttpClient createHttpClient(SecurityContext? context){
@@ -172,15 +173,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+
         children: [
         FadeInUp(
         delay: Durations.extralong4,
         child: Center(
         child: Container(
         color: Colors.white,
-        child: Image.asset('assets/logo.png')
+        child: Image.asset('assets/logo.png',width: 70,)
     ),)),
-          Container(height: 40,),
+          Container(height: 50,),
           AnimatedTextKit(
             animatedTexts: [
 
@@ -188,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 speed: Duration(milliseconds: 10),
                 'ELTEE',
                 textStyle: GoogleFonts.poppins(
-                    fontSize: 50,
+                    fontSize: 30,
                     fontWeight:FontWeight.bold
                 ),
                 colors:[ MyColors.btnBorderColor, Colors.yellow],
@@ -196,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ColorizeAnimatedText(
                 'SOLUTIONS',
                 textStyle: GoogleFonts.poppins(
-                    fontSize: 50,
+                    fontSize: 30,
                     fontWeight:FontWeight.bold
                 ),
                 colors:[ MyColors.btnBorderColor, Colors.yellow],

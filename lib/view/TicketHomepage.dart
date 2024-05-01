@@ -45,23 +45,28 @@ int ClosedCount = 0;
     print(UserRoll);
     var client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
     var Url;
-    if(UserRoll=="ADMIN") {
+    if(widget.loginModels[0].userRoll=="ADMIN") {
       Url = '${GlobalConfiguration().get("ApiURl")}apiticketcount/';
+    }
+    else if(widget.loginModels[0].userRoll=="ENGR"){
+      Url = '${GlobalConfiguration().get("ApiURl")}apiticketcount/${widget.loginModels[0].name}/0 ';
     }
     else{
       Url = '${GlobalConfiguration().get("ApiURl")}apiticketcount/$UserRoll';
     }
+    print(Url);
 
     var response = await client.get(Uri.parse(Url),headers: {
       'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
       'Content-Type': 'application/json',
-      'Cookie': 'ci_session=3gnid18nsvll4u99839vfroba1ihd58t; csrfcookiei2help=4912ec8965916cc488eeb6aa70918fa7'
+
     },
 
     );
 
     if (response.statusCode == 200) {
       setState(() {
+        AllTickets.clear();
         var jsonResponse = json.decode(response.body);
         var JsonData = jsonResponse['data'];
         print(JsonData);
@@ -114,11 +119,13 @@ int ClosedCount = 0;
                   color: Colors.white,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(60,),topRight: Radius.circular(60))),
               child: Padding(
-                padding: const EdgeInsets.only(top: 30),
+                padding: const EdgeInsets.only(top: 30,left: 10,right: 10),
                 child:  GridView.count(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 4.0,
-                    mainAxisSpacing: 8.0,
+                    crossAxisSpacing: 1.0,
+                    mainAxisSpacing: 1.0,
+
+
                     children: [
                       for(int i=0; i<AllTickets.length;i++)
                         InkWell(
@@ -131,7 +138,7 @@ int ClosedCount = 0;
                             padding: const EdgeInsets.all(10.0),
                             child: Container(
 
-                              width: size.width/2.5,height: 200,
+
 
                               decoration:  const BoxDecoration(
                                 color: Colors.white,

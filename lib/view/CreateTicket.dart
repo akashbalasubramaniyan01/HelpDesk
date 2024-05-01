@@ -33,6 +33,7 @@ class _CreateTicketState extends State<CreateTicket> {
   TextEditingController issuedetails = TextEditingController();
   TextEditingController SearchText = TextEditingController();
   TextEditingController DatetimeController = TextEditingController();
+  TextEditingController CompanyCodes = TextEditingController();
   String IssueAllert = "";
   bool CreateTicketbool = false;
   String DescAllert = "";
@@ -50,12 +51,14 @@ class _CreateTicketState extends State<CreateTicket> {
     String formattedTime = '${(now.hour)}:${(now.minute)}';
     DatetimeController.text = formattedDate+" "+ formattedTime;
     issuecode.text = widget.loginModels[0].company;
-
+    CompanyCodes.text =  widget.loginModels[0].company;
+    print("CompanyCodes.text${widget.loginModels[0].userRoll}");
  /*   var companies = widget.AllCompanyList.map((ticket) => ticket['Company']).toList();
       print(companies);
     CompanyCodeValues = widget.AllCompanyList.map((ticket) => ticket['Company']).toSet().toList();
 */
-
+    //CompanyCodeValues = widget.AllCompanyList.map((ticket) => ticket['Company']).toSet().toList();
+ //print(CompanyCodeValues);
   }
 int CountTicketBadge =0;
   Map<String, dynamic> JsonDatas = {
@@ -101,7 +104,7 @@ int CountTicketBadge =0;
 
   NewTickets(String Username, String Desc, String issuecode, String issuedetails, String issuevalsue, String issuetype,String dateInput,String CompanyCode) async {
     DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
-
+  print("sssssssssssssssssssCompanyCode"+CompanyCode);
     try{
       var url = "${GlobalConfiguration().get("ApiURl")}apinewticket";
       print(url);
@@ -132,7 +135,7 @@ int CountTicketBadge =0;
         "priority":issuevalsue,
         "details": issuedetails,
         "usrname": Username,
-        "ccode": issuecode
+        "ccode": CompanyCode
 
 
       }));
@@ -169,7 +172,7 @@ int CountTicketBadge =0;
           Navigator.pushReplacement(
               context, CupertinoPageRoute(builder: (_) => MainPage(0, loginModels:widget.loginModels,)));
 
-          ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+         // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
 
 
         }); }
@@ -185,6 +188,7 @@ int CountTicketBadge =0;
   void initState() {
     // TODO: implement initState
     _getDateAndTime();
+    username.text = widget.loginModels[0].name;
     ComapnyListData();
   }
   Widget build(BuildContext context) {
@@ -208,7 +212,7 @@ int CountTicketBadge =0;
                     ),]),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Center(child:  Text("Create Ticket",style: GoogleFonts.poppins( fontSize: 25.0,
+                  child: Center(child:  Text("Create Ticket",style: GoogleFonts.poppins( fontSize: 22.0,
                     color: MyColors.btnBorderColor,
                     fontWeight: FontWeight.bold,),)),
                 ),
@@ -371,6 +375,7 @@ crossAxisAlignment: CrossAxisAlignment.start,
                                   child: TextField(
                                     controller: username,
                                     maxLines: 1,
+                                    enabled: false,
                                     cursorColor: Colors.black87,
                                     onChanged: (value) {
                                       if(value.isNotEmpty){
@@ -609,12 +614,12 @@ crossAxisAlignment: CrossAxisAlignment.start,
                         Text(IssueAllert,style:GoogleFonts.quicksand( fontSize: 14.0,
                           color: Colors.red,
                           fontWeight: FontWeight.w800,),),
-
-                        Text("  Select Company Name",style:GoogleFonts.poppins( fontSize: 14.0,
+                        if(JsonDatas.isNotEmpty&&widget.loginModels[0].userRoll=="ADMIN")
+                        Text(" Company ",style:GoogleFonts.poppins( fontSize: 14.0,
                           color: Colors.black,
                           fontWeight: FontWeight.w400,),),
                         Container(height: 5,),
-                        if(JsonDatas.isNotEmpty)
+                        if(JsonDatas.isNotEmpty&&widget.loginModels[0].userRoll=="ADMIN")
                         Container(
                           width: size.width,
                           height: 50,
@@ -623,7 +628,7 @@ crossAxisAlignment: CrossAxisAlignment.start,
                               borderRadius: BorderRadius.circular(10.0),
                               color:  Colors.white,
 
-                              boxShadow: [new BoxShadow(
+                              boxShadow: const [BoxShadow(
                                 color: Colors.black26,
                                 blurRadius: 7,
                               ),]   ),
@@ -632,12 +637,12 @@ crossAxisAlignment: CrossAxisAlignment.start,
                               elevation: 0,
                               value: CompanyCode,
 
-                              icon: Icon(Icons.keyboard_arrow_down),
+                              icon: const Icon(Icons.keyboard_arrow_down),
 
                               items:JsonDatas.entries.map((MapEntry<String, dynamic> entry) {
                                 return DropdownMenuItem<String>(
                                   value: entry.key,
-                                  child: Text(entry.value),
+                                  child: Text(entry.value,style: TextStyle(fontSize: 13),),
                                 );
                               }).toList(),
 
@@ -645,17 +650,81 @@ crossAxisAlignment: CrossAxisAlignment.start,
 
                                 setState(() {
                                   CompanyCode = value.toString();
+                                  print(CompanyCode);
                                 });
                               },
 
                             ),
                           ),
-                        ),
-                        Container(height: 15,),
-
+                        )
+                        else if(JsonDatas.isNotEmpty)
                         Container(
                           alignment: Alignment.center,
-                          height: size.height / 13,
+                          height: size.height / 12,
+
+                          //margin: const EdgeInsets.only(left: 5,right: 5),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              color:  Colors.white,
+
+                              boxShadow: [new BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 7,
+                              ),]
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0,),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                //mail icon
+                                Icon(CupertinoIcons.layers_alt_fill),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+
+                                //divider svg
+                                SvgPicture.string(
+                                  '<svg viewBox="99.0 332.0 1.0 15.5" ><path transform="translate(99.0, 332.0)" d="M 0 0 L 0 15.5" fill="none" fill-opacity="0.6" stroke="#ffffff" stroke-width="1" stroke-opacity="0.6" stroke-miterlimit="4" stroke-linecap="butt" /></svg>',
+                                  width: 1.0,
+                                  height: 15.5,
+                                  color: Colors.black87,
+                                ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+
+                                //email address textField
+                                Expanded(
+                                  flex: 1,
+                                  child: TextField(
+                                    controller: CompanyCodes,
+                                    maxLines: 1,
+                                    enabled: false,
+                                    cursorColor: Colors.black87,
+                                    keyboardType: TextInputType.emailAddress,
+                                    style: TextStyle(   fontSize: 14.0,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w500,),
+                                    decoration: InputDecoration(
+                                        hintText: CompanyCodes.text,
+
+                                        hintStyle:GoogleFonts.quicksand( fontSize: 14.0,
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w800,),
+                                        border: InputBorder.none),
+
+                                  ),
+                                ),
+
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(height: 15,),
+                        Container(
+                          alignment: Alignment.center,
+                          height: size.height / 16,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
                             color: const Color(0xFFF56B3F),
@@ -669,13 +738,16 @@ crossAxisAlignment: CrossAxisAlignment.start,
                                 setState(() {
                                   IssueAllert = "Enter the Issue Detail";
                                   CodeAllert = "Enter the Issue Code";
-                                  UserNameAllert = "Enter the UserName";
+                                  //UserNameAllert = "Enter the UserName";
                                   DescAllert = "Enter the Description";
                                 });
                               }
                               else{
+                                print(widget.loginModels[0].userRoll=="ADMIN");
+                                print(widget.loginModels[0].userRoll);
+                                print(CompanyCode);
 
-                                NewTickets(username.text,Description.text,issuecode.text,issuedetails.text,dropdownvalue,pvalue,DatetimeController.text,CompanyCode);
+                                NewTickets(username.text,Description.text,issuecode.text,issuedetails.text,dropdownvalue,pvalue,DatetimeController.text,widget.loginModels[0].userRoll=="ADMIN"?CompanyCode:CompanyCodes.text);
 
                               }
 
@@ -695,7 +767,7 @@ crossAxisAlignment: CrossAxisAlignment.start,
                                   Container(width: 8,),
                                   Text(
                                       'Create Ticket',
-                                      style: GoogleFonts.poppins( fontSize: 25.0,
+                                      style: GoogleFonts.poppins( fontSize: 17.0,
                                         color: Colors.white,
                                         fontWeight: FontWeight.w800,)
                                   ),

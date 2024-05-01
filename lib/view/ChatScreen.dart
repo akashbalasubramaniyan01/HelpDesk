@@ -88,7 +88,7 @@ class _ChatPageState extends State<ChatPage> {
         //elevation: 1,
         leading: InkWell(onTap: () {
 
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(false);
         },child: Icon(Icons.arrow_back_ios,color: Colors.white)),
 
         title:   Text.rich(
@@ -162,7 +162,7 @@ width: MediaQuery.of(
        ),
 
         ),
-          SingleChildScrollView(
+      /*    SingleChildScrollView(
 
             child: Container(
 
@@ -250,6 +250,90 @@ width: MediaQuery.of(
                         );
                       }),
                 )
+            ),
+          ),*/
+
+              SingleChildScrollView(
+
+            child: Container(
+
+                height: MediaQuery.of(
+                    context)
+                    .size
+                    .height/1.4,
+
+                child: ListView.builder(
+                    controller: controllers,
+                    reverse: false,
+                    shrinkWrap: true,
+                    scrollDirection:
+                    Axis.vertical,
+
+                    padding:
+                    EdgeInsets.all(
+                        20),
+                    itemCount:
+                    dataList
+                        .length,
+                    itemBuilder: (context, i) {
+
+                      return Container(
+                          alignment: i % 2 == 0 ? Alignment.centerRight : Alignment.centerLeft,
+
+                          child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                              margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                              decoration:  BoxDecoration(
+                                boxShadow: [BoxShadow(blurRadius: 22, color: Colors.black12)],
+                                color: i % 2 == 0 ?MyColors.AppthemeColor:Colors.white,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(i % 2 == 0 ? 0 : 23), // Set topLeft radius to 0 when index is even
+                                  topRight: Radius.circular(i % 2 == 0 ? 23 : 0), // Set topRight radius to 0 when index is odd
+                                  bottomLeft: const Radius.circular(23),
+                                  bottomRight: const Radius.circular(23),
+                                ),
+                              ),
+                              child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+
+                                  children: [
+                                    Container(
+                                        width: MediaQuery.of(context).size.width /1.8,
+                                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                Text(dataList[i]['comment'], style: GoogleFonts.poppins(fontSize: 15, color: i % 2 == 0 ?Colors.white: Colors.black, fontWeight: FontWeight.w600)),
+
+                                                //Text(dataList[i][2], style: GoogleFonts.poppins(color: Colors.white)),
+                                                // const SizedBox(height: 8),
+                                                //  Text(dataList[i][1], style: GoogleFonts.poppins(color: Colors.white)),
+
+                                              ],
+                                            ),
+                                          ),
+
+
+                                        ],
+                                        )),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 6),
+                                      child: Text(
+                                        DateFormat('dd/MM/yyyy').format(DateTime.parse(dataList[i]['when']),),
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          color: i % 2 == 0 ?Colors.white: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ]))
+                      );
+                    }),
             ),
           ),
         ],
@@ -364,10 +448,15 @@ width: MediaQuery.of(
           DateTime now = DateTime.now();
           String formattedDate = now.toString();
           print(jsonResponse);
-          List<String> a =[
-            messge,
-            formattedDate
-          ];
+
+          Map a = {
+
+            'comment': Message.text,
+            'when': formattedDate,
+
+
+          };
+
           dataList.add(a);
           setState(() {
             Message.text ="";
@@ -409,10 +498,12 @@ width: MediaQuery.of(
       // Message sent successfully, update UI
       final responseData = jsonDecode(response.body);
 
-      List<dynamic> rawData = responseData['data'];
-
+      var rawData = responseData['data'];
+      print(rawData);
       setState(() {
-        dataList = rawData.map<List<String>>((item) => List<String>.from(item)).toList();
+        dataList.addAll(rawData);
+         //dataList = rawData.map<List<String>>((item) => List<String>.from(item)).toList();
+
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         controllers.jumpTo(controllers.position.maxScrollExtent);

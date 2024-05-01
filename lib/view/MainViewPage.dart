@@ -14,6 +14,7 @@ import 'package:helpdesk/view/signin.dart';
 import '../model/LoginModel.dart';
 import 'ChatScreen.dart';
 import 'CreateTicket.dart';
+import 'ProfilePage.dart';
 import 'TicketHomepage.dart';
 import 'TicketList.dart';
 import 'package:flutter_svg/svg.dart';
@@ -405,8 +406,8 @@ void initState() {
           backgroundColor: const Color(0xFF21899C),
           //elevation: 1,
           leading: Icon(Icons.sort,color: Colors.white,size: 30,),
-          actions: [
-            InkWell(
+        /*  actions: [
+         *//*   InkWell(
               onTap: () {
                 print("ggg");
       showAlignedDialog(
@@ -427,8 +428,8 @@ void initState() {
                     child: Icon(Icons.person,color: Colors.orange),
                   )),
             ),
-            Container(width: 10,)
-          ],
+            Container(width: 10,)*//*
+          ],*/
           title:  Center(
             child: Text.rich(
               TextSpan(
@@ -437,13 +438,13 @@ void initState() {
                   letterSpacing: 1.999999953855673,),
                 children: const [
                   TextSpan(
-                    text: 'I2',
+                    text: ' I2',
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                     ),
                   ),
                   TextSpan(
-                    text: '  HELP',
+                    text: ' HELP       ',
                     style: TextStyle(
                       color: Color(0xFFFE9879),
                       fontWeight: FontWeight.w800,
@@ -477,7 +478,7 @@ void initState() {
           color: Colors.white,
         ),
         SvgPicture.asset(
-          "assets/how-to-icon.svg",
+          "assets/profile.svg",
           width: 25,
           height: 25,
           color: Colors.white,
@@ -525,8 +526,17 @@ void initState() {
                     color: HexColor('FFFCFB'),
                     width: size.width/1,
                     height: size.height/1,
-                    child: TicketSearch(TotalTicketCount,widget.loginModels)),
+                    child: Profilepage(/*TotalTicketCount,widget.loginModels*/widget.loginModels)),
               )
+
+          /*    Expanded(
+                flex: 60,
+                child: Container(
+                    color: HexColor('FFFCFB'),
+                    width: size.width/1,
+                    height: size.height/1,
+                    child: TicketSearch(TotalTicketCount,widget.loginModels)),
+              )*/
 
         ],
       ),

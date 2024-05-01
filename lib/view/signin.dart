@@ -332,7 +332,7 @@ bool _passwordVisible= false;
           children: <Widget>[
             //mail icon
             const Icon(
-              Icons.mail_rounded,
+              Icons.phone,
               color: Colors.white70,
             ),
             const SizedBox(

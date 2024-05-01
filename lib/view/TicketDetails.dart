@@ -28,7 +28,9 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:http_auth/http_auth.dart';
 
 import '../model/LoginModel.dart';
+
 import 'dart:io';
+
 class TicketDeatils extends StatefulWidget {
 
   var AllTickets;
@@ -45,7 +47,6 @@ class TicketDeatils extends StatefulWidget {
 class _TicketDeatilsState extends State<TicketDeatils> {
   late String _radioValue ="Open"; //Initial definition of radio button value
   late String choice;
-
 
   radioButtonChanges(String? value) {
     setState(() {
@@ -71,6 +72,9 @@ class _TicketDeatilsState extends State<TicketDeatils> {
   String AllertName ="";
   bool ActiveButton = false;
   late Timer _timer;
+
+  //var NameAssignList=[];
+  List<Map<int, String>> NameAssignList = []; // Sample data
   @override
   void initState() {
     if(widget.AllTickets[widget.i]['Status']=="O") {
@@ -82,7 +86,7 @@ class _TicketDeatilsState extends State<TicketDeatils> {
     else  if(widget.AllTickets[widget.i]['Status']=="R"){
       _radioValue = "Resolved";
     }
-    // TODO: implement initState
+    TicketAssingNameList();
     super.initState();
   }
   Widget build(BuildContext context) {
@@ -130,22 +134,22 @@ class _TicketDeatilsState extends State<TicketDeatils> {
 
                 decoration: const BoxDecoration(color: Colors.white,boxShadow: [BoxShadow(blurRadius: 3,color: Colors.black12)]),
              child:  Padding(
-               padding: const EdgeInsets.all(16),
+               padding: const EdgeInsets.all(8),
                child: Center(
                  child: Row(
                    mainAxisAlignment: MainAxisAlignment.center,
                    children: [
                      Text(
-                       'Ticket Details: ${widget.AllTickets[widget.i]['TicketNo']}',
-                       style:  GoogleFonts.poppins(fontWeight: FontWeight.bold,color:Colors.cyan,fontSize:16),
+                       'Ticket No: ${widget.AllTickets[widget.i]['TicketNo']}',
+                       style:  GoogleFonts.poppins(fontWeight: FontWeight.bold,color:Colors.cyan,fontSize:13),
 
                      ),
-                     Container(width: 25,),
+                     Container(width: 10,),
                      InkWell(
 
                        onTap: () {
 
-                          Navigator.pushReplacement(
+                          Navigator.push(
     context, CupertinoPageRoute(builder: (_) =>  ChatPage(widget.loginModels, widget.AllTickets[widget.i]['TicketNo'], widget.AllTickets[widget.i]['ShortText'])));
 
                        },
@@ -159,14 +163,174 @@ class _TicketDeatilsState extends State<TicketDeatils> {
                          child: InkWell(
 
                            child: Text(
-                               '     View     ',
+                               '     Chat     ',
                                style: GoogleFonts.poppins( fontSize: 16.0,
                                  color: Colors.white,
                                  fontWeight: FontWeight.w800,)
                            ),
                          ),
                        ),
-                     )
+                     ),
+                     Container(width: 3,),
+                     if(widget.loginModels[0].userRoll=="ADMIN")
+                     InkWell(
+                       onTap: () {
+                         int selectedCardIndex = -1; // Index of the selected card, initially set to -1
+                         var name;
+                         showModalBottomSheet(
+                             context: context,
+                             builder: (context) {
+                               return StatefulBuilder(
+                                   builder: (BuildContext context, StateSetter setState /*You can rename this!*/) {
+                                     return Column(
+                                       children: [
+                                         Container(height: 30,),
+                                         Container(
+                                           width: size.width/1,
+                                           height: size.height/2.5,
+                                           child:  ListView(
+                                             children: NameAssignList.expand((map) {
+                                               return map.entries.map((entry) {
+                                                 int index = entry.key; // Get the index of the card
+                                                 var  namevale = entry.value; // Get the index of the card
+                                                 return  GestureDetector(
+                                                   onTap: () {
+                                                     setState(() {
+                                                       // Update the selected card index
+                                                       selectedCardIndex = index;
+                                                       name = namevale;
+                                                     });
+                                                   },
+                                                   child: Container(
+
+                                                       width: size.width/1,
+                                                       height: 70,
+                                                       child: Card(
+                                                           color: selectedCardIndex == index ? MyColors.AppthemeColor : Colors.white, // Change color based on selection
+                                                           elevation: 1,
+                                                           child: Row(
+                                                             children: [
+                                                               Padding(
+                                                                 padding: const EdgeInsets.all(8.0),
+                                                                 child: Center(
+                                                                   child: Container(
+                                                                     decoration: BoxDecoration(
+                                                                       border: Border.all( color: Colors.white,width: 2),
+                                                                       shape: BoxShape.circle,
+                                                                     ),
+                                                                     child: /*Icon(Icons.person,color: Colors.white,size: 56,)*/ Image.asset("assets/mens.png",width: 70,),
+                                                                   ),
+                                                                 ),
+                                                               ),
+                                                               Text(entry.value,
+                                                                   style: GoogleFonts.poppins( fontSize: 15.0,
+                                                                     color: Colors.black,
+                                                                     fontWeight: FontWeight.w800,)
+                                                               ),
+                                                               Container(width: 9,),
+                                                               if(selectedCardIndex == index)
+                                                               InkWell(
+
+                                                                 onTap: () {
+
+
+                                                                 },
+                                                                 child: Container(
+                                                                   alignment: Alignment.center,
+                                                                   height: size.height / 30,
+                                                                   decoration: BoxDecoration(
+                                                                     borderRadius: BorderRadius.circular(10.0),
+                                                                     color: const Color(0xFFF56B3F),
+                                                                   ),
+                                                                   child: InkWell(
+
+                                                                     child: Text(
+                                                                         '     Add     ',
+                                                                         style: GoogleFonts.poppins( fontSize: 16.0,
+                                                                           color: Colors.white,
+                                                                           fontWeight: FontWeight.w800,)
+                                                                     ),
+                                                                   ),
+                                                                 ),
+                                                               ),
+                                                             ],
+                                                           ))),
+                                                 );
+                                               });
+                                             }).toList(),
+                                           ),
+                                         ),
+
+                                         InkWell(
+
+                                           onTap: () {
+                                            if(name!=null) {
+                                              setState(() {
+                                                ActiveButton = true;
+                                              });
+                                              AssignTicket(
+                                                  widget.AllTickets[widget
+                                                      .i]['TicketNo'], name);
+                                            }
+                                            else{
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) {
+                                                  return  AlertDialog(
+                                                    elevation: 14,
+                                                    backgroundColor: MyColors.AppthemeColor,
+                                                    title: Text('Please Choose the Name',style: GoogleFonts.quicksand(textStyle: Theme.of(context).textTheme.headline4)),
+
+                                                  );
+                                                },
+                                              );
+                                            }
+                                             },
+                                           child: Container(
+                                             alignment: Alignment.center,
+                                             height: size.height / 15,
+                                             margin: EdgeInsets.only(left: 10,right: 10),
+                                             decoration: BoxDecoration(
+                                               borderRadius: BorderRadius.circular(10.0),
+                                               color: const Color(0xFFF56B3F),
+                                             ),
+                                             child: InkWell(
+
+                                               child: ActiveButton==true?Center(child: new SpinKitFadingCircle(
+                                     color: Colors.white,
+                                     size: 30,
+                                     )): Text(
+                                                   '     Assign Ticket     ',
+                                                   style: GoogleFonts.poppins( fontSize: 16.0,
+                                                     color: Colors.white,
+                                                     fontWeight: FontWeight.w800,)
+                                               ),
+                                             ),
+                                           ),
+                                         ),
+                                       ],
+                                     );
+                                   });
+                             });
+                       },
+                       child: Container(
+                         alignment: Alignment.center,
+                         height: size.height / 25,
+                         decoration: BoxDecoration(
+                           borderRadius: BorderRadius.circular(10.0),
+                           color: const Color(0xFFF56B3F),
+                         ),
+                         child: InkWell(
+
+                           child: Text(
+                               '     Assign     ',
+                               style: GoogleFonts.poppins( fontSize: 16.0,
+                                 color: Colors.white,
+                                 fontWeight: FontWeight.w800,)
+                           ),
+                         ),
+                       ),
+                     ),
                    ],
                  ),
                ),
@@ -919,6 +1083,134 @@ class _TicketDeatilsState extends State<TicketDeatils> {
           ..hideCurrentMaterialBanner()
           ..showMaterialBanner(materialBanner);
       }
+
+    } catch (e) {
+      print(e);
+    }
+  }
+  AssignTicket(String TicketNo, String Name) async {
+
+int ticket = int.parse(TicketNo);
+    try {
+      DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
+      var url = "${GlobalConfiguration().get("ApiURl")}engineerassignment";
+      print(url);
+      http.Response response = await client.put(
+          Uri.parse(url),
+          headers: {
+            'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+            'Content-Type': 'application/json',
+            'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
+          },
+          body: json.encode({
+            "ticketno": ticket,
+            "enggname": Name
+          })
+      );
+
+
+      print(response.statusCode);
+
+      if (response.statusCode == 200) {
+        final materialBanner = MaterialBanner(
+          elevation: 2,
+          backgroundColor: Colors.transparent,
+          forceActionsBelow: false,
+          content: AwesomeSnackbarContent(
+            title: 'Success',
+            message: 'Ticket has been Assigned',
+            contentType: ContentType.success,
+            inMaterialBanner: true,
+          ),
+          actions: const [SizedBox.shrink()],
+        );
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentMaterialBanner()
+          ..showMaterialBanner(materialBanner);
+        setState(() {
+          print(response.body);
+          var jsonResponse = json.decode(response.body);
+           print(jsonResponse);
+
+
+
+          ActiveButton==false;
+        });
+
+        Navigator.pop(context);
+        _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+            Navigator.pushReplacement(
+                context, CupertinoPageRoute(builder: (_) => TicketPage(widget.loginModels,widget.TicketName)));
+          ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+        });
+      } else if (response.statusCode == 302) {
+        // Handle redirection
+        var redirectUrl = response.headers['location'];
+        print(redirectUrl);
+        // You can choose to follow the redirect here by making another request to the new URL
+        // For example:
+        // http.Response redirectedResponse = await client.get(Uri.parse(redirectUrl));
+        // Handle the redirected response as needed
+      } else {
+        // Handle other error cases
+        final materialBanner = MaterialBanner(
+          elevation: 2,
+          backgroundColor: Colors.transparent,
+          forceActionsBelow: false,
+          content: AwesomeSnackbarContent(
+            title: 'Failure',
+            message: 'Username and Password invalid!!!',
+            contentType: ContentType.failure,
+            inMaterialBanner: true,
+          ),
+          actions: const [SizedBox.shrink()],
+        );
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentMaterialBanner()
+          ..showMaterialBanner(materialBanner);
+      }
+
+    } catch (e) {
+      print(e);
+    }
+  }
+  TicketAssingNameList() async {
+
+
+    try {
+      DigestAuthClient client = DigestAuthClient('ri2helpdeskuser', r'6i$qu@6e');
+      var url = "${GlobalConfiguration().get("ApiURl")}engineersnamelist";
+      print(url);
+      http.Response response = await client.get(
+          Uri.parse(url),
+          headers: {
+            'x-api-key': 'bRuD5WYw5wd0rdHR9yLlM6wt2vteuiniQBqE70nA',
+            'Content-Type': 'application/json',
+            'Cookie': 'ci_session=691airnq2vc9vimljkp2j2fe6ml7bgfe'
+          },
+
+      );
+
+
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          NameAssignList.clear();
+          Map<String, dynamic> jsonResponse = json.decode(response.body);
+          Map<String, dynamic> jsonData = jsonResponse['data'];
+          Map<int, String> parsedData = {};
+          jsonData.forEach((key, value) {
+            parsedData[int.parse(key)] = value;
+          });
+          NameAssignList.add(parsedData);
+
+        });
+
+      }
+
 
     } catch (e) {
       print(e);

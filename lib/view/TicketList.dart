@@ -634,10 +634,15 @@ class _TicketPageState extends State<TicketPage> {
 
       body: json.encode({
         "Company": UserRoll!="ADMIN"?widget.loginModels[0].company:null,
+        "engr": UserRoll=="ENGR"?widget.loginModels[0].name:null,
 
         })
     );
+print(json.encode({
+  "Company": UserRoll!="ADMIN"?widget.loginModels[0].company:null,
+  "engr": UserRoll=="ENGR"?widget.loginModels[0].name:null,
 
+}));
 
     if (response.statusCode == 200) {
      setState(() {
@@ -648,7 +653,7 @@ class _TicketPageState extends State<TicketPage> {
 
        ReadTickets.addAll(JsonData);
 
-         if(widget.TicketName=="t") {
+         if(widget.TicketName=="") {
 
           ReadTickets.forEach((element) {
             ticket_data_filtered.add(element);
@@ -765,7 +770,7 @@ class _TicketPageState extends State<TicketPage> {
                 ),
                 child: Center(child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text("${widget.TicketName} Ticket",style: GoogleFonts.poppins(fontSize: 18, color: MyColors.btnBorderColor, fontWeight: FontWeight.bold),),
+                  child: Text("${widget.TicketName=="O"?"Open":widget.TicketName=="C"?"Closed":widget.TicketName=="R"?"Resolved":"Total"} Ticket",style: GoogleFonts.poppins(fontSize: 18, color: MyColors.btnBorderColor, fontWeight: FontWeight.bold),),
                 )),
               ),
               Padding(
