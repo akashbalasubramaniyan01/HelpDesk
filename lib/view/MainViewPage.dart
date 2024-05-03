@@ -502,6 +502,7 @@ void initState() {
         children: [
 
           if(_page==0)
+
             Expanded(
               flex: 60,
               child: Container(

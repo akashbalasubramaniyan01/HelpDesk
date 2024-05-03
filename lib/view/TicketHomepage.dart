@@ -49,7 +49,7 @@ int ClosedCount = 0;
       Url = '${GlobalConfiguration().get("ApiURl")}apiticketcount/';
     }
     else if(widget.loginModels[0].userRoll=="ENGR"){
-      Url = '${GlobalConfiguration().get("ApiURl")}apiticketcount/${widget.loginModels[0].name}/0 ';
+      Url = '${GlobalConfiguration().get("ApiURl")}apiticketcount/${widget.loginModels[0].name}/0';
     }
     else{
       Url = '${GlobalConfiguration().get("ApiURl")}apiticketcount/$UserRoll';
@@ -112,6 +112,7 @@ int ClosedCount = 0;
             ),
 
             Container(height: 20,),
+
             Container(
               width: size.width/1,
               height: size.height/1.3,
@@ -127,6 +128,7 @@ int ClosedCount = 0;
 
 
                     children: [
+                        if(AllTickets.isNotEmpty)
                       for(int i=0; i<AllTickets.length;i++)
                         InkWell(
                           onTap: () {
@@ -180,11 +182,14 @@ int ClosedCount = 0;
                               ),
                             ),
                           ),
-                        ),
+                        )
+
+
                     ]
-                ),
+                )
               ),
-            ),
+            )
+
           ],
         ),
       ),

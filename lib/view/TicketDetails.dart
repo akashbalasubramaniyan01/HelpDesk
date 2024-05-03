@@ -1051,8 +1051,11 @@ class _TicketDeatilsState extends State<TicketDeatils> {
           widget.onBack();
           _timer = Timer.periodic(Duration(seconds: 2), (timer) {
             Navigator.pushReplacement(
+                context, CupertinoPageRoute(builder: (_) => MainPage( 0,loginModels: widget.loginModels,)));
+
+            /*  Navigator.pushReplacement(
                 context, CupertinoPageRoute(builder: (_) => TicketPage(widget.loginModels,widget.TicketName)));
-            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+         */   ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
           });
 
         });

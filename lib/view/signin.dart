@@ -86,14 +86,14 @@ class _SignInFiveState extends State<SignInFive> {
        // http.Response redirectedResponse = await client.get(Uri.parse(redirectUrl));
        // Handle the redirected response as needed
      } else {
-       // Handle other error cases
+       var jsonResponse = json.decode(response.body);
        final materialBanner = MaterialBanner(
          elevation: 0,
          backgroundColor: Colors.transparent,
          forceActionsBelow: false,
          content: AwesomeSnackbarContent(
-           title: 'Failure',
-           message: 'Username and Password invalid!!!',
+           title: response.statusCode.toString(),
+           message: jsonResponse['message'],
            contentType: ContentType.failure,
            inMaterialBanner: true,
          ),
