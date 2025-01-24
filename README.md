@@ -1,6 +1,6 @@
 # helpdesk
 
-![Alt text](assets/IMG-20250124-WA0006.jpg?raw=true "Title")
+![Alt text](assets/Frame13.png?raw=true "Title")
 
 ## Getting Started
 
